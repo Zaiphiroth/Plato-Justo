@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plato Justo · MVP Javeriana</title>
+<style>
+  :root{
+    --azul:#2563eb;
+    --azul-osc:#1e40af;
+    --amarillo:#fbbf24;
+    --amarillo-osc:#f59e0b;
+    --gris-claro:#f8fafc;
+    --gris:#e2e8f0;
+    --texto:#1e293b;
+    --texto-suave:#64748b;
+    --verde:#10b981;
+    --rojo:#ef4444;
+    --sombra:0 4px 12px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+  body{background:var(--gris-claro);color:var(--texto);line-height:1.6}
+
+  header{
+    background:#fff;
+    border-bottom:2px solid var(--gris);
+    padding:1rem 2rem;
+    box-shadow:var(--sombra);
+    position:sticky;top:0;z-index:100;
+  }
+  .header-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;max-width:1200px;margin:0 auto}
+  .logo{display:flex;align-items:center;gap:.8rem;font-size:1.4rem;font-weight:700;color:var(--azul)}
+  .logo-icon{
+    width:44px;height:44px;background:var(--azul);color:#fff;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;
+  }
+  .logo small{display:block;font-size:.75rem;font-weight:400;color:var(--texto-suave)}
+
+  nav{display:flex;gap:.5rem;flex-wrap:wrap}
+  nav button{
+    background:transparent;color:var(--texto);border:2px solid var(--gris);
+    padding:.5rem 1.2rem;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:500;
+    transition:all .2s;
+  }
+  nav button:hover{border-color:var(--azul);color:var(--azul)}
+  nav button.active{background:var(--azul);color:#fff;border-color:var(--azul)}
+
+  main{max-width:1200px;margin:0 auto;padding:2rem}
+  .view{display:none;animation:fade .3s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  h1{color:var(--azul-osc);font-size:1.8rem;margin-bottom:.4rem;font-weight:700}
+  h2{color:var(--azul-osc);font-size:1.3rem;margin:1.5rem 0 .8rem;font-weight:600}
+  h3{color:var(--texto);font-size:1.05rem;margin-bottom:.5rem;font-weight:600}
+  .subtitle{color:var(--texto-suave);margin-bottom:1.5rem;font-size:.95rem}
+
+  .card{
+    background:#fff;border-radius:10px;padding:1.3rem;
+    box-shadow:var(--sombra);margin-bottom:1rem;
+    border:1px solid var(--gris);
+  }
+  .grid{display:grid;gap:1rem}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+
+  .semana-selector{
+    background:linear-gradient(135deg,var(--azul),var(--azul-osc));
+    color:#fff;padding:1rem 1.5rem;border-radius:10px;margin-bottom:1.5rem;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+  }
+  .semana-info{flex:1}
+  .semana-info .num{font-size:1.3rem;font-weight:700}
+  .semana-info .label{font-size:.85rem;opacity:.9}
+  .semana-nav{display:flex;gap:.5rem}
+  .semana-nav button{
+    background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);
+    padding:.4rem .8rem;border-radius:6px;cursor:pointer;font-size:.85rem;
+    transition:all .2s;
+  }
+  .semana-nav button:hover{background:rgba(255,255,255,.3)}
+  .semana-nav button:disabled{opacity:.4;cursor:not-allowed}
+
+  .plato{
+    border:2px solid var(--gris);border-radius:10px;padding:1.2rem;
+    transition:all .2s;cursor:pointer;position:relative;background:#fff;
+  }
+  .plato:hover{border-color:var(--azul);box-shadow:0 6px 20px rgba(37,99,235,.15)}
+  .plato.destacado{border-color:var(--amarillo);background:linear-gradient(135deg,#fff,#fef3c7)}
+  .plato .etiqueta{
+    position:absolute;top:-10px;right:12px;
+    background:var(--amarillo);color:var(--texto);padding:4px 12px;
+    border-radius:16px;font-size:.75rem;font-weight:600;
+  }
+  .plato .etiqueta.mayorista{background:var(--azul);color:#fff}
+  .plato-nombre{font-weight:700;font-size:1.1rem;color:var(--azul-osc);margin-bottom:.4rem}
+  .plato-desc{font-size:.88rem;color:var(--texto-suave);margin-bottom:.8rem}
+  .plato-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem}
+  .precio{font-size:1.4rem;font-weight:700;color:var(--azul)}
+  .precio-antiguo{text-decoration:line-through;color:#94a3b8;font-size:.9rem;margin-right:.4rem}
+  .descuento{background:var(--verde);color:#fff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}
+  .plato-info{font-size:.8rem;color:var(--texto-suave);margin-top:.6rem;display:flex;gap:1rem;flex-wrap:wrap}
+
+  .btn{
+    background:var(--azul);color:#fff;border:none;padding:.6rem 1.3rem;
+    border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:600;
+    transition:all .2s;
+  }
+  .btn:hover{background:var(--azul-osc)}
+  .btn-sm{padding:.45rem .9rem;font-size:.85rem}
+  .btn-outline{background:transparent;color:var(--azul);border:2px solid var(--azul)}
+  .btn-outline:hover{background:var(--azul);color:#fff}
+
+  .reserva-modal{
+    display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;
+  }
+  .reserva-modal.active{display:flex}
+  .modal-content{
+    background:#fff;border-radius:12px;padding:2rem;max-width:450px;width:90%;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+  }
+  .modal-content h2{margin-top:0;color:var(--azul-osc)}
+  .form-group{margin-bottom:1rem}
+  .form-group label{display:block;font-weight:600;margin-bottom:.4rem;font-size:.9rem;color:var(--texto)}
+  .form-group input,.form-group select{
+    width:100%;padding:.65rem;border:1px solid var(--gris);border-radius:6px;font-size:.95rem;
+  }
+  .form-group input:focus,.form-group select:focus{outline:none;border-color:var(--azul)}
+  .carnet{
+    background:linear-gradient(135deg,var(--azul),var(--azul-osc));
+    color:#fff;padding:1.2rem;border-radius:10px;margin:1rem 0;
+    display:flex;align-items:center;gap:1rem;
+  }
+  .carnet-foto{
+    width:50px;height:50px;background:var(--amarillo);color:var(--texto);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;
+  }
+  .modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{padding:.75rem;text-align:left;border-bottom:1px solid var(--gris)}
+  th{background:var(--gris-claro);color:var(--azul-osc);font-weight:600;font-size:.85rem}
+  tr:hover{background:#f8fafc}
+
+  .tabla-presupuesto th{background:var(--azul);color:#fff}
+  .tabla-presupuesto td{font-variant-numeric:tabular-nums}
+  .tabla-presupuesto .total-row{font-weight:700;background:var(--gris-claro);border-top:2px solid var(--azul)}
+
+  .stat{
+    background:#fff;border-radius:10px;padding:1.3rem;text-align:center;
+    box-shadow:var(--sombra);border-left:4px solid var(--azul);
+  }
+  .stat .num{font-size:2.2rem;font-weight:700;color:var(--azul)}
+  .stat .label{font-size:.85rem;color:var(--texto-suave);margin-top:.3rem}
+  .stat.verde{border-left-color:var(--verde)}
+  .stat.verde .num{color:var(--verde)}
+  .stat.amarillo{border-left-color:var(--amarillo)}
+  .stat.amarillo .num{color:var(--amarillo-osc)}
+
+  .timeline{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+  .slot{
+    flex:1;min-width:80px;padding:.7rem;background:var(--gris-claro);
+    border-radius:6px;text-align:center;font-size:.85rem;font-weight:500;
+  }
+  .slot.activo{background:var(--azul);color:#fff;font-weight:600}
+  .slot.medio{background:var(--amarillo);color:var(--texto);font-weight:600}
+
+  .alert{
+    padding:.9rem 1.1rem;border-radius:8px;margin-bottom:1rem;
+    border-left:4px solid;font-size:.9rem;
+  }
+  .alert-info{background:#dbeafe;border-color:var(--azul);color:var(--azul-osc)}
+  .alert-success{background:#d1fae5;border-color:var(--verde);color:#065f46}
+  .alert-ia{background:#fef3c7;border-color:var(--amarillo);color:#78350f}
+  .alert-warning{background:#fef3c7;border-color:var(--amarillo-osc);color:#78350f}
+
+  .tabs-internas{display:flex;gap:.3rem;margin-bottom:1.2rem;border-bottom:2px solid var(--gris)}
+  .tab-btn{
+    background:transparent;border:none;padding:.7rem 1.2rem;cursor:pointer;
+    font-size:.9rem;color:var(--texto-suave);border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500;
+  }
+  .tab-btn.active{color:var(--azul);border-bottom-color:var(--azul);font-weight:600}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  footer{
+    background:var(--azul-osc);color:#fff;padding:2rem;margin-top:3rem;
+    text-align:center;font-size:.85rem;
+  }
+  .badge{
+    display:inline-block;padding:3px 10px;border-radius:12px;
+    font-size:.75rem;font-weight:600;background:var(--gris);color:var(--texto-suave);
+  }
+  .badge.azul{background:#dbeafe;color:var(--azul)}
+  .badge.verde{background:#d1fae5;color:var(--verde)}
+  .badge.amarillo{background:#fef3c7;color:#78350f}
+
+  .ahorro-box{
+    background:linear-gradient(135deg,var(--azul),var(--azul-osc));
+    color:#fff;padding:1.8rem;border-radius:12px;text-align:center;
+    box-shadow:var(--sombra);
+  }
+  .ahorro-box .num{font-size:2.8rem;font-weight:700;margin:.3rem 0}
+  .ahorro-box .label{font-size:.9rem;opacity:.95}
+
+  .costo-block{
+    background:var(--gris-claro);padding:1rem;border-radius:8px;margin-bottom:.8rem;border-left:3px solid var(--azul);
+  }
+  .costo-block h4{color:var(--azul-osc);margin-bottom:.5rem;font-size:.95rem}
+  .costo-block ul{margin-left:1.2rem;font-size:.88rem;color:var(--texto-suave)}
+  .costo-block li{margin-bottom:.3rem}
+
+  .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+  .pros-cons > div{padding:1rem;border-radius:8px}
+  .pros{background:#d1fae5;border-left:4px solid var(--verde)}
+  .cons{background:#fee2e2;border-left:4px solid var(--rojo)}
+  .pros h4{color:#065f46;margin-bottom:.5rem}
+  .cons h4{color:#7f1d1d;margin-bottom:.5rem}
+
+  .nota-costo{
+    background:#fff;border:1px dashed var(--azul);border-radius:8px;padding:1rem;margin-top:1rem;
+    font-size:.88rem;color:var(--texto-suave);
+  }
+  .nota-costo strong{color:var(--azul-osc)}
+
+  .cifra-destacada{
+    background:linear-gradient(135deg,var(--verde),#059669);
+    color:#fff;padding:1.2rem;border-radius:10px;text-align:center;margin-bottom:1rem;
+  }
+  .cifra-destacada .num{font-size:2rem;font-weight:700;margin:.3rem 0}
+  .cifra-destacada .label{font-size:.85rem;opacity:.95}
+
+  .fuente-dato{
+    font-size:.78rem;color:var(--texto-suave);font-style:italic;margin-top:.5rem;
+    padding-top:.5rem;border-top:1px dashed var(--gris);
+  }
+
+  @media(max-width:600px){
+    main{padding:1rem}
+    h1{font-size:1.5rem}
+    nav button{padding:.45rem .9rem;font-size:.85rem}
+    .tabla-presupuesto{font-size:.8rem}
+    .tabla-presupuesto th, .tabla-presupuesto td{padding:.5rem}
+    .pros-cons{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">PJ</div>
+      <div>
+        Plato Justo
+        <small>Mini-app Javeriana · MVP</small>
+      </div>
+    </div>
+    <nav>
+      <button class="active" onclick="showView('estudiante',this)">Estudiante</button>
+      <button onclick="showView('cafeteria',this)">Cafetería</button>
+      <button onclick="showView('info',this)">Proyecto y Costos</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ VISTA ESTUDIANTE ============ -->
+  <section id="view-estudiante" class="view active">
+    <h1>Bienvenido</h1>
+    <p class="subtitle">Encuentra el almuerzo más económico del día y resérvalo con tu carné Javeriano.</p>
+
+    <div class="semana-selector">
+      <div class="semana-info">
+        <div class="label">Semana actual</div>
+        <div class="num" id="semana-actual">Semana 1 · 2-6 Nov 2026</div>
+      </div>
+      <div class="semana-nav">
+        <button onclick="cambiarSemana(-1)" id="btn-semana-anterior">Anterior</button>
+        <button onclick="cambiarSemana(1)" id="btn-semana-siguiente">Siguiente</button>
+      </div>
+    </div>
+
+    <div class="ahorro-box" style="margin-bottom:1.8rem">
+      <div class="label">Tu ahorro acumulado esta semana</div>
+      <div class="num" id="ahorro-total">$0</div>
+      <div class="label" style="font-size:.85rem;opacity:.9">Con el 10% de descuento por usar la app</div>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>Pedidos semanales disponibles:</strong> Reserva toda tu semana de una vez y ayuda a la cafetería a abastecerse con exactitud.
+    </div>
+
+    <div class="tabs-internas">
+      <button class="tab-btn active" onclick="showTab('hoy',this)">Menú de hoy</button>
+      <button class="tab-btn" onclick="showTab('semana',this)">Semana completa</button>
+      <button class="tab-btn" onclick="showTab('reservas',this)">Mis reservas</button>
+    </div>
+
+    <div id="tab-hoy" class="tab-content active">
+      <h2>Platos económicos de hoy</h2>
+      <p class="subtitle">Ordenados por precio. Calculados con ingredientes de temporada y bajo consumo energético.</p>
+      <div class="grid grid-2" id="platos-hoy"></div>
+    </div>
+
+    <div id="tab-semana" class="tab-content">
+      <h2>Reserva tu semana completa</h2>
+      <p class="subtitle">Selecciona un plato por día. La cafetería sabrá exactamente cuánto preparar.</p>
+      <div id="platos-semana"></div>
+      <button class="btn" onclick="reservarSemana()" style="margin-top:1rem">Confirmar reserva semanal</button>
+    </div>
+
+    <div id="tab-reservas" class="tab-content">
+      <h2>Mis reservas</h2>
+      <p class="subtitle">Puedes cancelar hasta 2 horas antes del almuerzo.</p>
+      <div id="lista-reservas"></div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA CAFETERÍA ============ -->
+  <section id="view-cafeteria" class="view">
+    <h1>Panel de la cafetería</h1>
+    <p class="subtitle">Información en tiempo real para cocinar solo lo necesario y optimizar el uso de equipos de cocción.</p>
+
+    <div class="grid grid-3" style="margin-bottom:1.8rem">
+      <div class="stat">
+        <div class="num" id="stat-reservas">0</div>
+        <div class="label">Reservas de hoy</div>
+      </div>
+      <div class="stat verde">
+        <div class="num" id="stat-desperdicio">0 kg</div>
+        <div class="label">Desperdicio de insumos evitado</div>
+      </div>
+      <div class="stat amarillo">
+        <div class="num" id="stat-energia">0 kWh</div>
+        <div class="label">Ahorro energético estimado</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Reservas por plato</h3>
+        <table>
+          <thead><tr><th>Plato</th><th>Reservas</th><th>Insumos (kg)</th></tr></thead>
+          <tbody id="tabla-reservas-platos"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Horarios sugeridos para equipos de cocción</h3>
+        <p style="font-size:.88rem;color:var(--texto-suave);margin-bottom:.8rem">
+          Basado en las reservas, estos son los horarios óptimos para encender hornos y equipos de preparación. 
+          <em>(Nota: Las neveras se mantienen encendidas continuamente por seguridad alimentaria).</em>
+        </p>
+        <div style="margin-bottom:.6rem;font-weight:600;color:var(--azul-osc)">Hornos y equipos de cocción</div>
+        <div class="timeline" id="timeline-hornos"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <h3>Sugerencia de abastecimiento</h3>
+      <div class="alert alert-ia">
+        <strong>Algoritmo de recomendación:</strong> Cruza datos de precios de centrales mayoristas con el menú para sugerir ingredientes de temporada de bajo costo (sin costo de API de IA externa).
+      </div>
+      <div id="sugerencia-abastecimiento"></div>
+    </div>
+  </section>
+
+  <!-- ============ VISTA INFO Y COSTOS ============ -->
+  <section id="view-info" class="view">
+    <h1>Documentación y Presupuesto del Proyecto</h1>
+    <p class="subtitle">MVP Plato Justo · Propuesta técnica y económica para la Javeriana Bogotá.</p>
+
+    <div class="card">
+      <h2>Alcance realista del MVP</h2>
+      <p>Esta propuesta está diseñada para un piloto en una cafetería del campus de la <strong>Pontificia Universidad Javeriana en Bogotá</strong>, con posibilidad de escalar a las demás cafeterías del campus una vez validado el modelo.</p>
+      <div class="grid grid-2" style="margin-top:1rem">
+        <div class="costo-block" style="border-left-color:var(--verde)">
+          <h4>Incluido en el MVP</h4>
+          <ul>
+            <li>App estudiante y panel web de cafetería.</li>
+            <li>Base de datos Firebase Firestore (capa gratuita).</li>
+            <li>Algoritmos heurísticos propios (sin APIs de IA de pago).</li>
+            <li>Levantamiento manual de datos de precios.</li>
+            <li>Optimización de hornos y equipos de cocción.</li>
+            <li>Acceso vía QR (sin descarga).</li>
+            <li>Dominio institucional <code>platojusto.javeriana.edu.co</code>.</li>
+          </ul>
+        </div>
+        <div class="costo-block" style="border-left-color:var(--texto-suave)">
+          <h4>Dejado para fase de expansión</h4>
+          <ul>
+            <li>Integración automática API Javeriana / Corabastos.</li>
+            <li>Microservicios separados (se usa backend monolítico).</li>
+            <li>Notificaciones push/SMS (se usa confirmación en app).</li>
+            <li>Extensión a otras sedes (Cali, etc.).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- NUEVA SECCIÓN: AHORRO ENERGÉTICO PARA LA JAVERIANA BOGOTÁ -->
+    <div class="card">
+      <h2>Ahorro energético proyectado · Javeriana Bogotá</h2>
+      <p class="subtitle">Estimación del impacto real sobre el consumo eléctrico del campus, contextualizada con datos de una cafetería universitaria típica en Bogotá.</p>
+
+      <div class="grid grid-3">
+        <div class="cifra-destacada">
+          <div class="label">Consumo mensual estimado por cafetería</div>
+          <div class="num">~4.000 kWh</div>
+          <div class="label">Equipos de cocción: ~35% del total</div>
+        </div>
+        <div class="cifra-destacada" style="background:linear-gradient(135deg,var(--azul),var(--azul-osc))">
+          <div class="label">Ahorro proyectado con Plato Justo</div>
+          <div class="num">~490 kWh/mes</div>
+          <div class="label">15-20% sobre equipos de cocción</div>
+        </div>
+        <div class="cifra-destacada" style="background:linear-gradient(135deg,var(--amarillo-osc),#d97706)">
+          <div class="label">Ahorro en pesos (tarifa comercial Bogotá)</div>
+          <div class="num">~$370.000/mes</div>
+          <div class="label">Por cafetería piloto</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:1.2rem">¿Cómo se calcula?</h3>
+      <div class="costo-block">
+        <h4>1. Línea base de consumo</h4>
+        <p style="font-size:.9rem;color:var(--texto-suave)">
+          Una cafetería universitaria de tamaño medio en Bogotá (como las del edificio San Ignacio o Nuevo de Mendoza) consume aproximadamente <strong>4.000 kWh mensuales</strong>. De ese total, los equipos de cocción (hornos, freidores, estufas industriales) representan alrededor del <strong>35%</strong>, es decir, ~1.400 kWh/mes. Las neveras, aunque también consumen, no se pueden apagar por norma sanitaria, así que no entran en la optimización.
+        </p>
+        <div class="fuente-dato">Fuente: rangos típicos reportados por la Superintendencia de Servicios para comercios del sector alimentos en Bogotá (estrato comercial).</div>
+      </div>
+
+      <div class="costo-block">
+        <h4>2. Optimización con reservas anticipadas</h4>
+        <p style="font-size:.9rem;color:var(--texto-suave)">
+          Con los pedidos semanales de los estudiantes, la cafetería sabe con días de anticipación cuántos platos preparar. Esto permite:
+        </p>
+        <ul>
+          <li><strong>Encender hornos solo en ventanas necesarias:</strong> en vez de tenerlos prendidos toda la mañana "por si acaso", se encienden justo antes de la hora pico de entrega (11:30am - 1:30pm).</li>
+          <li><strong>Agrupar cocciones:</strong> hornear varios platos a la vez en lugar de encender el horno varias veces al día.</li>
+          <li><strong>Evitar recalentamientos:</strong> al saber exactamente cuánto se va a vender, no se cocina de más que luego hay que mantener caliente (gastando energía).</li>
+        </ul>
+        <p style="font-size:.9rem;color:var(--texto-suave);margin-top:.5rem">
+          Esta optimización representa un ahorro estimado del <strong>15-20% sobre el consumo de equipos de cocción</strong>, equivalente a ~210-280 kWh/mes por cafetería.
+        </p>
+      </div>
+
+      <div class="costo-block">
+        <h4>3. Traducción a pesos (tarifa Bogotá)</h4>
+        <p style="font-size:.9rem;color:var(--texto-suave)">
+          La tarifa eléctrica comercial en Bogotá (estrato no residencial, empresa como Enel-Codensa) está alrededor de <strong>$750 COP por kWh</strong> (incluyendo cargos fijos y ACD). Con un ahorro de ~490 kWh/mes, el beneficio económico directo es de aproximadamente <strong>$370.000 COP mensuales</strong> por cafetería.
+        </p>
+        <div class="fuente-dato">Tarifa referencial: resolución CREG vigente para Bogotá D.C., usuario comercial. Puede variar según estrato y cargo por capacidad.</div>
+      </div>
+
+      <div class="costo-block" style="border-left-color:var(--verde)">
+        <h4>4. Proyección a todo el campus</h4>
+        <p style="font-size:.9rem;color:var(--texto-suave)">
+          La Javeriana Bogotá tiene al menos <strong>4 cafeterías principales</strong> (San Ignacio, Mendoza, edificio de Posgrado, y zonas de comidas rápidas). Si el piloto funciona y se extiende a todas, el ahorro anual proyectado sería:
+        </p>
+        <ul>
+          <li><strong>Ahorro mensual campus completo:</strong> ~$1.480.000 COP</li>
+          <li><strong>Ahorro anual campus completo:</strong> ~$17.760.000 COP</li>
+          <li><strong>Reducción de huella de carbono:</strong> ~23 toneladas de CO₂ al año (factor de emisión Colombia: 0,12 kg CO₂/kWh)</li>
+        </ul>
+        <div class="fuente-dato">Proyección estimada. Requiere validación con datos reales de las facturas eléctricas de cada cafetería, gestionables a través de la Vicerrectoría Administrativa.</div>
+      </div>
+    </div>
+
+    <!-- NUEVA SECCIÓN: FINANCIACIÓN DEL PROYECTO -->
+    <div class="card">
+      <h2>Financiamiento del proyecto</h2>
+      <p class="subtitle">Modelo de inversión institucional con recursos propios de la universidad.</p>
+
+      <div class="alert alert-success">
+        <strong>Modelo elegido:</strong> Inversión directa de la Pontificia Universidad Javeriana, gestionada a través de la Vicerrectoría Administrativa y el área de Bienestar Universitario. No se cobra al estudiante ni a la cafetería operadora.
+      </div>
+
+      <h3>¿Por qué la universidad asume la inversión?</h3>
+      <div class="costo-block">
+        <h4>1. Alineación con la misión institucional</h4>
+        <ul>
+          <li><strong>Bienestar estudiantil:</strong> la universidad tiene programas activos de apoyo a estudiantes con presupuesto limitado. El 10% de descuento se alinea con estas políticas.</li>
+          <li><strong>Sostenibilidad ambiental:</strong> la Javeriana Bogotá tiene compromisos públicos de reducción de huella de carbono. El ahorro energético de las cafeterías contribuye directamente a esas metas.</li>
+          <li><strong>Innovación académica:</strong> el proyecto sirve como caso de estudio para facultades de Ingeniería, Administración y Ciencias Económicas.</li>
+        </ul>
+      </div>
+
+      <div class="costo-block">
+        <h4>2. Infraestructura ya existente que se aprovecha</h4>
+        <ul>
+          <li><strong>Dominio institucional:</strong> la universidad ya posee el dominio <code>javeriana.edu.co</code> y puede crear subdominios sin costo adicional (ej: <code>platojusto.javeriana.edu.co</code>). No hay que comprar dominio externo.</li>
+          <li><strong>Autenticación:</strong> se puede aprovechar el directorio activo institucional para validar el carné Javeriano en una fase posterior, sin desarrollar un sistema nuevo.</li>
+          <li><strong>Red y conectividad:</strong> el campus cuenta con WiFi institucional (eduroam), por lo que los estudiantes ya tienen conectividad para usar la app.</li>
+          <li><strong>Comunicación interna:</strong> los canales oficiales de la universidad (correo institucional, app Javeriana, carteleras) sirven para promocionar el piloto sin costo de marketing externo.</li>
+        </ul>
+      </div>
+
+      <div class="costo-block">
+        <h4>3. Fuentes presupuestales posibles</h4>
+        <ul>
+          <li><strong>Fondo de Bienestar Universitario:</strong> para el subsidio del 10% a estudiantes.</li>
+          <li><strong>Fondo de Sostenibilidad Ambiental:</strong> para el desarrollo del software, dado el impacto en reducción de huella de carbono.</li>
+          <li><strong>Presupuesto de Innovación TIC:</strong> para el mantenimiento mensual y las horas de soporte técnico.</li>
+          <li><strong>Ahorro generado:</strong> los ~$370.000 COP/mes que se ahorran en energía por cafetería pueden reinvertirse en el mantenimiento del sistema, haciendo el proyecto <strong>autosostenible</strong> a partir del segundo mes de operación.</li>
+        </ul>
+      </div>
+
+      <div class="nota-costo">
+        <strong>Conclusión financiera:</strong> la universidad asume la inversión inicial (~$3.785.000 COP) como un proyecto de bienestar y sostenibilidad. El ahorro energético mensual (~$370.000 COP por cafetería) permite que el sistema se autofinancie operativamente, y el beneficio al estudiante (10% de descuento) se cubre con el Fondo de Bienestar como una inversión social con retorno medible.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Presupuesto Detallado (COP)</h2>
+      <p class="subtitle">Valores estimados para el desarrollo y operación del piloto, financiados por la universidad.</p>
+      
+      <div style="overflow-x:auto;">
+        <table class="tabla-presupuesto">
+          <thead>
+            <tr>
+              <th>Bloque / Concepto</th>
+              <th>Cantidad</th>
+              <th>Unidad</th>
+              <th>Valor Unitario (COP)</th>
+              <th>Total (COP)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="5" style="background:#dbeafe; font-weight:700; color:var(--azul-osc);">1. Desarrollo (Pago único · financiado por la universidad)</td></tr>
+            <tr><td>Diseño de interfaz (UI/UX)</td><td>20</td><td>Horas</td><td>$40.000</td><td>$800.000</td></tr>
+            <tr><td>Desarrollo Backend y API</td><td>25</td><td>Horas</td><td>$40.000</td><td>$1.000.000</td></tr>
+            <tr><td>Desarrollo Frontend</td><td>20</td><td>Horas</td><td>$40.000</td><td>$800.000</td></tr>
+            <tr><td>Pruebas funcionales y ajustes</td><td>20</td><td>Horas</td><td>$40.000</td><td>$800.000</td></tr>
+            <tr class="total-row"><td>Subtotal Desarrollo (85 horas)</td><td>85</td><td>Horas</td><td>-</td><td>$3.400.000</td></tr>
+            
+            <tr><td colspan="5" style="background:#dbeafe; font-weight:700; color:var(--azul-osc); padding-top:1.5rem;">2. Infraestructura Tecnológica (Mensual)</td></tr>
+            <tr><td>Firebase Hosting (Spark Plan)</td><td>1</td><td>Mes</td><td>$0</td><td>$0</td></tr>
+            <tr><td>Firebase Firestore (1 GB incluido)</td><td>1</td><td>Mes</td><td>$0</td><td>$0</td></tr>
+            <tr><td>Transferencia de datos (360 MB/día)</td><td>1</td><td>Mes</td><td>$0</td><td>$0</td></tr>
+            <tr><td>Dominio institucional <code>platojusto.javeriana.edu.co</code></td><td>1</td><td>Subdominio</td><td>$0 (incluido)</td><td>$0</td></tr>
+            <tr class="total-row"><td>Subtotal Infraestructura</td><td>-</td><td>Mes</td><td>-</td><td>$0</td></tr>
+
+            <tr><td colspan="5" style="background:#dbeafe; font-weight:700; color:var(--azul-osc); padding-top:1.5rem;">3. Mantenimiento y Operación (Mensual)</td></tr>
+            <tr><td>Actualización semanal de menús y precios</td><td>4</td><td>Horas/mes</td><td>$30.000</td><td>$120.000</td></tr>
+            <tr><td>Soporte técnico y corrección de errores</td><td>3</td><td>Horas/mes</td><td>$30.000</td><td>$90.000</td></tr>
+            <tr><td>Respaldos automáticos (Firebase)</td><td>1</td><td>Mes</td><td>Incluido</td><td>$0</td></tr>
+            <tr class="total-row"><td>Subtotal Operación</td><td>-</td><td>Mes</td><td>-</td><td>$210.000</td></tr>
+
+            <tr><td colspan="5" style="background:#dbeafe; font-weight:700; color:var(--azul-osc); padding-top:1.5rem;">4. Costos Variables</td></tr>
+            <tr><td>Descuento del 10% (Ej: 100 res/mes × $8.000)</td><td>100</td><td>Reservas/mes</td><td>$800</td><td>$80.000</td></tr>
+            <tr><td>Exceso de transferencia Firebase (si aplica)</td><td>0</td><td>GB</td><td>$600</td><td>$0</td></tr>
+            <tr><td>Provisión para imprevistos (10% del desarrollo)</td><td>1</td><td>Global</td><td>$340.000</td><td>$340.000</td></tr>
+            <tr class="total-row"><td>Subtotal Variables</td><td>-</td><td>-</td><td>-</td><td>$420.000</td></tr>
+
+            <tr style="background:var(--azul); color:#fff; font-size:1.1rem;">
+              <td colspan="4" style="text-align:right; font-weight:700; padding:1rem;">INVERSIÓN INICIAL (Asume la universidad)</td>
+              <td style="font-weight:700; padding:1rem;">$3.785.000</td>
+            </tr>
+            <tr style="background:var(--azul-osc); color:#fff; font-size:1rem;">
+              <td colspan="4" style="text-align:right; font-weight:700; padding:1rem;">COSTO OPERATIVO MENSUAL (Mes 2 en adelante)</td>
+              <td style="font-weight:700; padding:1rem;">$290.000 + descuento</td>
+            </tr>
+            <tr style="background:var(--verde); color:#fff; font-size:1rem;">
+              <td colspan="4" style="text-align:right; font-weight:700; padding:1rem;">Ahorro energético mensual esperado (por cafetería)</td>
+              <td style="font-weight:700; padding:1rem;">~$370.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Explicación detallada de los costos</h2>
+      <p class="subtitle">Cada partida se justifica con base en la arquitectura elegida y las condiciones reales del piloto en la Javeriana Bogotá.</p>
+
+      <div class="costo-block">
+        <h4>1. Desarrollo (85 horas × $40.000 COP = $3.400.000)</h4>
+        <p style="font-size:.9rem; color:var(--texto-suave); margin-bottom:.5rem">
+          Aunque para el proyecto académico el costo monetario lo asume el equipo como valor en especie, <strong>el desarrollo no es gratis</strong>: corresponde a 85 horas de trabajo profesional que, si se contratara externamente, tendrían este valor. Se desglosa en:
+        </p>
+        <ul>
+          <li><strong>Diseño UI/UX (20 h):</strong> pantallas de estudiante, panel de cafetería, flujo de reserva y cancelación.</li>
+          <li><strong>Backend y API (25 h):</strong> modelo de datos en Firestore, reglas de seguridad, endpoints de reservas, menús y calificaciones.</li>
+          <li><strong>Frontend (20 h):</strong> implementación responsive (una sola versión que sirve en cualquier celular).</li>
+          <li><strong>Pruebas y ajustes (20 h):</strong> pruebas con estudiantes reales y corrección de errores.</li>
+        </ul>
+      </div>
+
+      <div class="costo-block">
+        <h4>2. Infraestructura tecnológica (Firebase + dominio institucional)</h4>
+        <p style="font-size:.9rem; color:var(--texto-suave); margin-bottom:.5rem">
+          Se eligió <strong>Firebase</strong> porque su plan gratuito (Spark) es suficiente para un piloto de una cafetería. Además, <strong>la universidad aporta su dominio institucional</strong>, lo que elimina el costo de dominio externo:
+        </p>
+        <ul>
+          <li><strong>Firebase Hosting:</strong> alojamiento gratuito con certificado HTTPS incluido.</li>
+          <li><strong>Firebase Firestore:</strong> 1 GB de almacenamiento y 360 MB de transferencia diaria. Para una cafetería con ~100-200 usuarios activos es suficiente.</li>
+          <li><strong>Si se superan los límites:</strong> el costo es de US$0,15 por GB transferido adicional (aprox. $600 COP/GB). Esto solo ocurriría si el piloto escala a varias cafeterías.</li>
+          <li><strong>Dominio institucional:</strong> la universidad ya posee <code>javeriana.edu.co</code>. Crear el subdominio <code>platojusto.javeriana.edu.co</code> no tiene costo adicional y le da al proyecto credibilidad institucional desde el primer día.</li>
+        </ul>
+      </div>
+
+      <div class="costo-block">
+        <h4>3. Mantenimiento y operación ($210.000 COP/mes)</h4>
+        <p style="font-size:.9rem; color:var(--texto-suave); margin-bottom:.5rem">
+          Una web, aunque sea sencilla, <strong>necesita arreglos y ajustes continuos</strong>. Esto incluye:
+        </p>
+        <ul>
+          <li><strong>Actualización semanal de menús (4 h):</strong> cargar los platos de cada semana, ajustar precios según los insumos de temporada reportados por la cafetería.</li>
+          <li><strong>Soporte técnico (3 h):</strong> atender errores de reservas duplicadas, problemas de cancelación, ajustes menores solicitados por la cafetería.</li>
+          <li><strong>Respaldos:</strong> Firebase los hace automáticamente, no tiene costo adicional en el plan gratuito.</li>
+        </ul>
+      </div>
+
+      <div class="costo-block">
+        <h4>4. Costos variables</h4>
+        <p style="font-size:.9rem; color:var(--texto-suave); margin-bottom:.5rem">
+          Estos dependen del uso real de la app:
+        </p>
+        <ul>
+          <li><strong>Descuento del 10%:</strong> no es un costo de software, sino un beneficio al estudiante. Se estima en $80.000 COP/mes para 100 reservas con precio promedio de $8.000. <strong>Lo asume el Fondo de Bienestar Universitario</strong> como parte de su política de apoyo estudiantil.</li>
+          <li><strong>Exceso de transferencia:</strong> solo aplica si se supera el límite de 360 MB/día de Firebase. En el piloto es improbable.</li>
+          <li><strong>Imprevistos (10%):</strong> provisión presupuestal estándar para ajustes no contemplados.</li>
+        </ul>
+      </div>
+
+      <div class="costo-block" style="border-left-color:var(--amarillo-osc)">
+        <h4>Consideraciones legales y de integración</h4>
+        <ul>
+          <li><strong>Protección de datos personales:</strong> al guardar datos de estudiantes (carné, reservas, calificaciones), aplican las obligaciones de la <strong>Ley 1581 de 2012 (Habeas Data)</strong>. La universidad ya cuenta con una política institucional de tratamiento de datos que cubre este caso.</li>
+          <li><strong>Carné Javeriano:</strong> iniciar sesión con la cuenta institucional requiere <strong>permiso explícito de la universidad</strong>, gestionable a través de la Dirección de Tecnologías. Para este piloto, el inicio de sesión se <strong>simula</strong> con un ID genérico, dejando la integración real como paso futuro.</li>
+          <li><strong>Datos de cafetería:</strong> los precios y menús se levantan manualmente con el administrador de la cafetería piloto. La conexión automática con centrales mayoristas queda para una fase posterior.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>¿Web o app nativa para el piloto?</h2>
+      <p class="subtitle">Análisis de la alternativa elegida (web) frente a una app nativa.</p>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>A favor de la web</h4>
+          <ul style="margin-left:1.2rem; font-size:.9rem">
+            <li>Un cartel con <strong>QR en la cafetería</strong> permite abrir la web directamente, sin descargar nada.</li>
+            <li>Funciona en cualquier celular (iOS y Android) con una sola versión.</li>
+            <li>Es la opción <strong>más barata para el piloto</strong>: sin costos de publicación en tiendas ni desarrollo separado.</li>
+            <li>Actualizaciones inmediatas, sin que el usuario tenga que bajar nuevas versiones.</li>
+            <li>Sirve como <strong>prototipo validado</strong> si luego la universidad quiere integrarla dentro de su app oficial.</li>
+            <li>Se publica bajo el dominio institucional <code>.javeriana.edu.co</code>, lo que le da legitimidad.</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>En contra de la web</h4>
+          <ul style="margin-left:1.2rem; font-size:.9rem">
+            <li>Los <strong>avisos al celular son más limitados</strong> que en una app nativa (no hay push robusto sin configuración adicional).</li>
+            <li>Queda <strong>fuera de la app oficial de la Javeriana</strong>. Habría que preguntar a la universidad si puede enlazarla desde su app.</li>
+            <li>Requiere conexión a internet en el momento de uso (aunque Firebase funciona bien con conexiones lentas).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="nota-costo">
+        <strong>Conclusión para el piloto:</strong> la web es la opción más económica y rápida de validar. Si el piloto demuestra valor (más del 70% de los estudiantes la usarían, según la meta de evaluación), entonces se justifica invertir en una app nativa o en la integración dentro de la app de la Javeriana.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Declaración de uso de algoritmos (IA)</h2>
+      <p style="font-size:.9rem;margin-bottom:1rem">Para mantener la viabilidad económica del MVP, <strong>no se utilizan APIs de Inteligencia Artificial Generativa de pago</strong>. Las funcionalidades se resuelven con programación convencional:</p>
+      <table>
+        <thead><tr><th>Funcionalidad</th><th>Implementación real en MVP</th><th>Costo</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Recomendación de platos</strong></td>
+            <td>Algoritmo de ordenamiento por precio, cruzando datos de insumos y temporada cargados en BD.</td>
+            <td><span class="badge azul">Incluido en desarrollo</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sugerencia de abastecimiento</strong></td>
+            <td>Reglas de negocio que identifican ingredientes recurrentes en el menú semanal y sugieren compra al por mayor.</td>
+            <td><span class="badge azul">Incluido en desarrollo</span></td>
+          </tr>
+          <tr>
+            <td><strong>Optimización de equipos</strong></td>
+            <td>Cálculo matemático simple de ventanas de tiempo basado en la hora pico de reservas (solo hornos/cocción).</td>
+            <td><span class="badge azul">Incluido en desarrollo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Conexión con el problema (Fenómeno del Niño)</h2>
+      <p>El fenómeno encarece insumos y energía. La cadena de valor de la app es:</p>
+      <ol style="margin-left:1.5rem; margin-top:.5rem">
+        <li>Reservas semanales precisas = La cafetería compra <strong>exactamente</strong> lo necesario.</li>
+        <li>Menos compra de insumos de último minuto (más caros) y menos desperdicio de comida ya cocinada.</li>
+        <li>Encendido programado de hornos solo en ventanas de tiempo necesarias = Ahorro directo en factura de energía (ver sección de ahorro energético Javeriana Bogotá).</li>
+        <li>La cafetería protege su margen sin subir el precio, y el estudiante obtiene un <strong>10% de descuento</strong> por garantizar la venta anticipada.</li>
+      </ol>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL RESERVA -->
+<div class="reserva-modal" id="modal-reserva">
+  <div class="modal-content">
+    <h2>Confirmar reserva</h2>
+    <div class="carnet">
+      <div class="carnet-foto">PJ</div>
+      <div>
+        <div style="font-weight:700">Estudiante Javeriano</div>
+        <div style="font-size:.85rem;opacity:.9">ID: 2024•••789 · Carné digital</div>
+      </div>
+    </div>
+    <div id="modal-plato-info"></div>
+    <div class="form-group">
+      <label>Fecha y hora</label>
+      <input type="text" id="modal-fecha" readonly>
+    </div>
+    <div class="form-group">
+      <label>Modalidad</label>
+      <select id="modal-modalidad">
+        <option>Autoservicio (recoger en mostrador)</option>
+        <option>Servicio en mesa</option>
+      </select>
+    </div>
+    <div class="alert alert-success">
+      <strong>Aplicado:</strong> 10% de descuento por garantizar la venta anticipada.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn" onclick="confirmarReserva()">Reservar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><strong>Plato Justo</strong> · MVP · Pontificia Universidad Javeriana · Bogotá</p>
+  <p style="margin-top:.5rem;opacity:.85">Proyecto académico · Datos simulados para demostración</p>
+  <p style="margin-top:.5rem;opacity:.75">Noviembre 2026</p>
+</footer>
+
+<script>
+  // ============ DATOS SIMULADOS - MENÚS SEMANALES ============
+  const menusSemanales = {
+    1: [
+      {id:1, nombre:"Arroz con pollo y ensalada", desc:"Pollo desmechado, arroz, ensalada fresca.", precio:9500, energia:0.8, insumos:0.6, origen:"temporada", rating:4.5},
+      {id:2, nombre:"Lentejas con arroz", desc:"Plato vegetariano alto en proteína.", precio:7500, energia:0.5, insumos:0.4, origen:"mayorista", rating:4.2},
+      {id:3, nombre:"Bandeza de frijoles", desc:"Frijoles, arroz, huevo y patacón.", precio:8500, energia:0.7, insumos:0.5, origen:"temporada", rating:4.6},
+      {id:4, nombre:"Sopa de verduras + arroz", desc:"Sopa ligera con verduras de temporada.", precio:6500, energia:0.3, insumos:0.3, origen:"mayorista", rating:4.0},
+      {id:5, nombre:"Pasta con salsa de tomate", desc:"Pasta con salsa casera y queso.", precio:8000, energia:0.4, insumos:0.4, origen:"temporada", rating:4.3}
+    ],
+    2: [
+      {id:6, nombre:"Bandeja paisa económica", desc:"Frijoles, arroz, carne molida, huevo, plátano.", precio:9800, energia:0.9, insumos:0.7, origen:"temporada", rating:4.7},
+      {id:7, nombre:"Ajiaco de pollo", desc:"Sopa tradicional con pollo y papa.", precio:8800, energia:0.6, insumos:0.5, origen:"mayorista", rating:4.4},
+      {id:8, nombre:"Arroz con atún", desc:"Atún en salsa con arroz y ensalada.", precio:7800, energia:0.4, insumos:0.4, origen:"mayorista", rating:4.1},
+      {id:9, nombre:"Caldo de costilla", desc:"Caldo tradicional con costilla y papa.", precio:7200, energia:0.5, insumos:0.4, origen:"temporada", rating:4.3},
+      {id:10, nombre:"Arroz con huevo frito", desc:"Arroz, huevo frito, ensalada y patacón.", precio:6800, energia:0.3, insumos:0.3, origen:"temporada", rating:4.0}
+    ],
+    3: [
+      {id:11, nombre:"Sancocho de gallina", desc:"Sopa espesa con gallina y verduras.", precio:9200, energia:0.8, insumos:0.6, origen:"temporada", rating:4.6},
+      {id:12, nombre:"Arroz con pollo sudado", desc:"Pollo en salsa con arroz blanco.", precio:8500, energia:0.6, insumos:0.5, origen:"mayorista", rating:4.3},
+      {id:13, nombre:"Frijoles con carne", desc:"Frijoles con carne desmechada y arroz.", precio:8800, energia:0.7, insumos:0.5, origen:"temporada", rating:4.5},
+      {id:14, nombre:"Sopa de lentejas", desc:"Lentejas con verduras y arroz.", precio:7000, energia:0.4, insumos:0.4, origen:"mayorista", rating:4.2},
+      {id:15, nombre:"Arroz con menestra", desc:"Menestra de verduras con arroz.", precio:6500, energia:0.3, insumos:0.3, origen:"temporada", rating:4.1}
+    ],
+    4: [
+      {id:16, nombre:"Bandeja de carne asada", desc:"Carne asada, arroz, papa y ensalada.", precio:10500, energia:0.9, insumos:0.7, origen:"temporada", rating:4.8},
+      {id:17, nombre:"Arroz con pollo a la plancha", desc:"Pollo a la plancha con arroz y verduras.", precio:9000, energia:0.7, insumos:0.5, origen:"mayorista", rating:4.4},
+      {id:18, nombre:"Sopa de pollo con fideos", desc:"Sopa ligera con fideos y pollo.", precio:7500, energia:0.5, insumos:0.4, origen:"temporada", rating:4.2},
+      {id:19, nombre:"Arroz con huevo perico", desc:"Huevo revuelto con tomate y cebolla, arroz.", precio:7000, energia:0.3, insumos:0.3, origen:"mayorista", rating:4.1},
+      {id:20, nombre:"Lentejas vegetarianas", desc:"Lentejas con verduras, sin carne.", precio:7200, energia:0.4, insumos:0.4, origen:"temporada", rating:4.3}
+    ]
+  };
+
+  const semanasInfo = {
+    1: "Semana 1 · 2-6 Nov 2026",
+    2: "Semana 2 · 9-13 Nov 2026",
+    3: "Semana 3 · 16-20 Nov 2026",
+    4: "Semana 4 · 23-27 Nov 2026"
+  };
+
+  const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes"];
+  let semanaActual = 1;
+  let platos = menusSemanales[semanaActual];
+  let reservas = [];
+  let ahorroTotal = 0;
+  let platoSeleccionado = null;
+
+  function cambiarSemana(direccion){
+    const nuevaSemana = semanaActual + direccion;
+    if(nuevaSemana >= 1 && nuevaSemana <= 4){
+      semanaActual = nuevaSemana;
+      platos = menusSemanales[semanaActual];
+      document.getElementById('semana-actual').textContent = semanasInfo[semanaActual];
+      document.getElementById('btn-semana-anterior').disabled = (semanaActual === 1);
+      document.getElementById('btn-semana-siguiente').disabled = (semanaActual === 4);
+      renderPlatosHoy();
+      renderSemana();
+    }
+  }
+
+  function showView(view, btn){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+view).classList.add('active');
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(view==='cafeteria') actualizarPanel();
+  }
+
+  function showTab(tab, btn){
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function renderPlatosHoy(){
+    const cont = document.getElementById('platos-hoy');
+    const sorted = [...platos].sort((a,b)=>a.precio-b.precio);
+    cont.innerHTML = sorted.map((p,i)=>{
+      const precioFinal = Math.round(p.precio*0.9);
+      const esMasBarato = i===0;
+      const etiquetaOrigen = p.origen==='mayorista'
+        ? '<span class="etiqueta mayorista">Mayorista</span>'
+        : '<span class="etiqueta">Temporada</span>';
+      return `
+        <div class="plato ${esMasBarato?'destacado':''}">
+          ${esMasBarato?'<span class="etiqueta">Más barato</span>':etiquetaOrigen}
+          <div class="plato-nombre">${p.nombre}</div>
+          <div class="plato-desc">${p.desc}</div>
+          <div class="plato-meta">
+            <div>
+              <span class="precio-antiguo">$${p.precio.toLocaleString()}</span>
+              <span class="precio">$${precioFinal.toLocaleString()}</span>
+              <span class="descuento">-10%</span>
+            </div>
+            <button class="btn btn-sm" onclick="abrirReserva(${p.id})">Reservar</button>
+          </div>
+          <div class="plato-info">
+            <span>Energía: ${p.energia} kWh</span>
+            <span>Insumos: ${p.insumos} kg</span>
+            <span>Rating: ${p.rating}/5</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderSemana(){
+    const cont = document.getElementById('platos-semana');
+    cont.innerHTML = dias.map(d=>`
+      <div class="card">
+        <h3>${d}</h3>
+        <select id="sel-${d}" style="width:100%;padding:.6rem;border:1px solid var(--gris);border-radius:6px">
+          ${platos.map(p=>`<option value="${p.id}">${p.nombre} - $${Math.round(p.precio*0.9).toLocaleString()}</option>`).join('')}
+        </select>
+      </div>
+    `).join('');
+  }
+
+  function reservarSemana(){
+    dias.forEach(d=>{
+      const sel = document.getElementById('sel-'+d);
+      const id = parseInt(sel.value);
+      const p = platos.find(x=>x.id===id);
+      reservas.push({
+        id:Date.now()+Math.random(),
+        plato:p.nombre,
+        precio:Math.round(p.precio*0.9),
+        precioOriginal:p.precio,
+        fecha:`${d} 12:30`,
+        modalidad:'Autoservicio',
+        semana:semanaActual
+      });
+      ahorroTotal += (p.precio - Math.round(p.precio*0.9));
+    });
+    alert('¡Semana reservada! Revisa tus reservas.');
+    actualizarAhorro();
+    renderReservas();
+  }
+
+  function abrirReserva(id){
+    platoSeleccionado = platos.find(p=>p.id===id);
+    const precioFinal = Math.round(platoSeleccionado.precio*0.9);
+    document.getElementById('modal-plato-info').innerHTML = `
+      <div style="background:var(--gris-claro);padding:1rem;border-radius:8px;margin-bottom:1rem;border:1px solid var(--gris)">
+        <strong style="color:var(--azul-osc)">${platoSeleccionado.nombre}</strong><br>
+        <span style="font-size:.88rem;color:var(--texto-suave)">${platoSeleccionado.desc}</span><br>
+        <span class="precio-antiguo">$${platoSeleccionado.precio.toLocaleString()}</span>
+        <span class="precio">$${precioFinal.toLocaleString()}</span>
+      </div>
+    `;
+    document.getElementById('modal-fecha').value = 'Hoy, 12:30 pm';
+    document.getElementById('modal-reserva').classList.add('active');
+  }
+
+  function cerrarModal(){
+    document.getElementById('modal-reserva').classList.remove('active');
+  }
+
+  function confirmarReserva(){
+    const modalidad = document.getElementById('modal-modalidad').value;
+    const precioFinal = Math.round(platoSeleccionado.precio*0.9);
+    reservas.push({
+      id:Date.now(),
+      plato:platoSeleccionado.nombre,
+      precio:precioFinal,
+      precioOriginal:platoSeleccionado.precio,
+      fecha:'Hoy, 12:30',
+      modalidad:modalidad,
+      semana:semanaActual
+    });
+    ahorroTotal += (platoSeleccionado.precio - precioFinal);
+    cerrarModal();
+    actualizarAhorro();
+    renderReservas();
+    alert('¡Reserva confirmada! Puedes cancelar hasta 2 horas antes.');
+  }
+
+  function renderReservas(){
+    const cont = document.getElementById('lista-reservas');
+    if(reservas.length===0){
+      cont.innerHTML = '<div class="card" style="text-align:center;color:var(--texto-suave)">Aún no tienes reservas.</div>';
+      return;
+    }
+    cont.innerHTML = reservas.map(r=>`
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem">
+        <div>
+          <div style="font-weight:700;color:var(--azul-osc)">${r.plato}</div>
+          <div style="font-size:.88rem;color:var(--texto-suave)">${r.fecha} · ${r.modalidad} · Semana ${r.semana}</div>
+          <div style="font-size:.9rem;margin-top:.4rem">
+            <span class="precio-antiguo">$${r.precioOriginal.toLocaleString()}</span>
+            <strong style="color:var(--verde)">$${r.precio.toLocaleString()}</strong>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="cancelarReserva(${r.id})">Cancelar</button>
+      </div>
+    `).join('');
+  }
+
+  function cancelarReserva(id){
+    if(confirm('¿Cancelar esta reserva?')){
+      reservas = reservas.filter(r=>r.id!==id);
+      renderReservas();
+      actualizarAhorro();
+    }
+  }
+
+  function actualizarAhorro(){
+    document.getElementById('ahorro-total').textContent = '$'+ahorroTotal.toLocaleString();
+  }
+
+  function actualizarPanel(){
+    const totalReservas = reservas.length;
+    document.getElementById('stat-reservas').textContent = totalReservas;
+    document.getElementById('stat-desperdicio').textContent = (totalReservas*0.15).toFixed(1)+' kg';
+    document.getElementById('stat-energia').textContent = (totalReservas*0.08).toFixed(1)+' kWh';
+
+    const conteo = {};
+    reservas.forEach(r=>{ conteo[r.plato] = (conteo[r.plato]||0)+1; });
+    const tbody = document.getElementById('tabla-reservas-platos');
+    if(Object.keys(conteo).length===0){
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--texto-suave)">Sin reservas aún</td></tr>';
+    } else {
+      tbody.innerHTML = Object.entries(conteo).map(([p,c])=>{
+        const plato = platos.find(x=>x.nombre===p);
+        const insumos = plato ? (plato.insumos*c).toFixed(1) : '—';
+        return `<tr><td>${p}</td><td>${c}</td><td>${insumos}</td></tr>`;
+      }).join('');
+    }
+
+    const slots = ['6am','8am','10am','12m','2pm','4pm'];
+    const hornos = slots.map((s,i)=>{
+      const cls = i===2||i===3?'activo':i===4?'medio':'';
+      return `<div class="slot ${cls}">${s}</div>`;
+    }).join('');
+    document.getElementById('timeline-hornos').innerHTML = hornos;
+
+    document.getElementById('sugerencia-abastecimiento').innerHTML = `
+      <ul style="margin-left:1.5rem;font-size:.9rem">
+        <li>Comprar <strong>lentejas</strong> en Central de Corabastos (precio bajo esta semana).</li>
+        <li>Aprovechar <strong>verduras de temporada</strong>: zanahoria, calabaza, cebolla.</li>
+        <li>Arroz en bulto de 25kg (mejor precio por kg).</li>
+        <li>Pollo: considerar muslo en lugar de pechuga (ahorra 18%).</li>
+      </ul>
+    `;
+  }
+
+  document.getElementById('btn-semana-anterior').disabled = true;
+  renderPlatosHoy();
+  renderSemana();
+  renderReservas();
+  actualizarAhorro();
+</script>
+
+</body>
+</html>

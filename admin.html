@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plato Justo · Panel Administrativo Universidad</title>
+<style>
+  :root{
+    --azul:#2563eb; --azul-osc:#1e40af; --amarillo:#fbbf24; --amarillo-osc:#f59e0b;
+    --gris-claro:#f8fafc; --gris:#e2e8f0; --texto:#1e293b; --texto-suave:#64748b;
+    --verde:#10b981; --rojo:#ef4444; --sombra:0 4px 12px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+  body{background:var(--gris-claro);color:var(--texto);line-height:1.6}
+
+  header{background:linear-gradient(135deg,var(--azul-osc),#0f172a);color:#fff;padding:1.5rem 2rem;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+  .header-inner{max-width:1400px;margin:0 auto}
+  .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:1rem}
+  .logo{display:flex;align-items:center;gap:1rem}
+  .logo-icon{width:50px;height:50px;background:var(--amarillo);color:var(--texto);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;}
+  .logo-text h1{font-size:1.5rem;margin-bottom:.2rem}
+  .logo-text p{font-size:.85rem;opacity:.85}
+  
+  nav{display:flex;gap:.5rem;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.2);padding-top:1rem}
+  nav button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:.6rem 1.3rem;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:500;transition:all .2s;}
+  nav button:hover{background:rgba(255,255,255,.2)}
+  nav button.active{background:var(--amarillo);color:var(--texto);border-color:var(--amarillo);font-weight:600}
+
+  main{max-width:1400px;margin:0 auto;padding:2rem}
+  .view{display:none;animation:fade .3s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  h2{color:var(--azul-osc);font-size:1.6rem;margin-bottom:.5rem;font-weight:700}
+  h3{color:var(--azul-osc);font-size:1.2rem;margin-bottom:.8rem;font-weight:600}
+  .subtitle{color:var(--texto-suave);margin-bottom:1.5rem;font-size:.95rem}
+
+  .card{background:#fff;border-radius:10px;padding:1.5rem;box-shadow:var(--sombra);margin-bottom:1.5rem;border:1px solid var(--gris);}
+  .grid{display:grid;gap:1.5rem}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .grid-4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+
+  .stat{background:#fff;border-radius:10px;padding:1.5rem;text-align:center;box-shadow:var(--sombra);border-left:4px solid var(--azul);}
+  .stat .num{font-size:2.5rem;font-weight:700;color:var(--azul)}
+  .stat .label{font-size:.9rem;color:var(--texto-suave);margin-top:.3rem}
+  .stat.verde{border-left-color:var(--verde)} .stat.verde .num{color:var(--verde)}
+  .stat.amarillo{border-left-color:var(--amarillo)} .stat.amarillo .num{color:var(--amarillo-osc)}
+  .stat.rojo{border-left-color:var(--rojo)} .stat.rojo .num{color:var(--rojo)}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{padding:.8rem;text-align:left;border-bottom:1px solid var(--gris)}
+  th{background:var(--gris-claro);color:var(--azul-osc);font-weight:600;font-size:.85rem}
+  tr:hover{background:#f8fafc}
+
+  .badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.75rem;font-weight:600;}
+  .badge.verde{background:#d1fae5;color:#065f46}
+  .badge.amarillo{background:#fef3c7;color:#78350f}
+  .badge.rojo{background:#fee2e2;color:#7f1d1d}
+  .badge.gris{background:#e2e8f0;color:#475569}
+
+  .alert{padding:1rem 1.2rem;border-radius:8px;margin-bottom:1rem;border-left:4px solid;font-size:.9rem;}
+  .alert-info{background:#dbeafe;border-color:var(--azul);color:var(--azul-osc)}
+  .alert-success{background:#d1fae5;border-color:var(--verde);color:#065f46}
+
+  .infra-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:var(--gris-claro);border-radius:8px;margin-bottom:.6rem;}
+  .infra-item .info{flex:1}
+  .infra-item .info strong{display:block;color:var(--azul-osc);font-size:1rem;margin-bottom:.2rem}
+  .infra-item .info span{font-size:.85rem;color:var(--texto-suave)}
+
+  .log-entry{padding:.8rem 1rem;border-left:3px solid var(--gris);background:#fff;margin-bottom:.6rem;border-radius:0 6px 6px 0;font-size:.9rem;}
+  .log-entry.info{border-left-color:var(--azul)}
+  .log-entry.success{border-left-color:var(--verde)}
+  .log-entry .timestamp{font-size:.8rem;color:var(--texto-suave);font-family:monospace;margin-bottom:.3rem}
+
+  .progress-bar{height:10px;background:var(--gris);border-radius:5px;overflow:hidden;margin-top:.5rem;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--azul),var(--verde));border-radius:5px;transition:width .3s}
+
+  .metric-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--gris);}
+  .metric-row:last-child{border-bottom:none}
+  .metric-row .label{color:var(--texto-suave);font-size:.95rem}
+  .metric-row .value{font-weight:700;color:var(--azul-osc);font-size:1.05rem}
+
+  .btn{background:var(--azul);color:#fff;border:none;padding:.6rem 1.3rem;border-radius:6px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;}
+  .btn:hover{background:var(--azul-osc)}
+  .btn-sm{padding:.5rem 1rem;font-size:.85rem}
+  .btn-danger{background:var(--rojo);color:#fff;border:none}
+  .btn-danger:hover{background:#b91c1c}
+
+  .empty-state{text-align:center;padding:3rem 1rem;color:var(--texto-suave);}
+  .empty-state .icon{font-size:3rem;margin-bottom:1rem;opacity:.3}
+  .empty-state h4{color:var(--azul-osc);margin-bottom:.5rem}
+
+  .reset-bar{background:#fff;border:1px solid var(--gris);border-radius:8px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+  .reset-bar .info{font-size:.9rem;color:var(--texto-suave)}
+  .reset-bar .info strong{color:var(--texto)}
+
+  footer{background:var(--azul-osc);color:#fff;padding:2rem;margin-top:3rem;text-align:center;font-size:.85rem;}
+
+  @media(max-width:768px){
+    main{padding:1rem}
+    .header-top{flex-direction:column;gap:1rem;text-align:center}
+    nav{justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">PJ</div>
+        <div class="logo-text">
+          <h1>Panel Administrativo</h1>
+          <p>Plato Justo · Pontificia Universidad Javeriana Bogotá</p>
+        </div>
+      </div>
+    </div>
+    <nav>
+      <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
+      <button onclick="showView('pedidos',this)">Pedidos del Día</button>
+      <button onclick="showView('financiero',this)">Financiero</button>
+      <button onclick="showView('tecnico',this)">Estado Técnico</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="reset-bar">
+    <div class="info">
+      <strong>Panel de control:</strong> Sincronizado en tiempo real con la página del estudiante (vía navegador).
+      <span id="last-sync" style="margin-left:10px; font-size:0.8rem; color:var(--verde);"></span>
+    </div>
+    <button class="btn btn-danger btn-sm" onclick="resetearTodo()">Resetear datos de prueba</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="view active">
+    <h2>Dashboard General</h2>
+    <p class="subtitle">Resumen ejecutivo del estado del proyecto Plato Justo.</p>
+    <div class="grid grid-4" style="margin-bottom:2rem">
+      <div class="stat verde"><div class="num" id="dash-estudiantes">0</div><div class="label">Estudiantes activos</div></div>
+      <div class="stat"><div class="num" id="dash-pedidos">0</div><div class="label">Pedidos de hoy</div></div>
+      <div class="stat amarillo"><div class="num" id="dash-ahorro">$0</div><div class="label">Ahorro energético mensual</div></div>
+      <div class="stat verde"><div class="num">99.8%</div><div class="label">Uptime del sistema</div></div>
+    </div>
+
+    <div class="alert alert-info" id="dash-alert">
+      <strong>Estado del sistema:</strong> Esperando primeros pedidos desde la página principal...
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Pedidos de hoy por cafetería</h3>
+        <table>
+          <thead><tr><th>Cafetería</th><th>Pedidos</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>La Pecera</td><td id="caf-pecera">0</td><td><span class="badge gris">Esperando</span></td></tr>
+            <tr><td>Atrio</td><td>0</td><td><span class="badge gris">No iniciado</span></td></tr>
+            <tr><td>Giraldo</td><td>0</td><td><span class="badge gris">No iniciado</span></td></tr>
+            <tr><td>Básicas</td><td>0</td><td><span class="badge gris">No iniciado</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Indicadores clave</h3>
+        <div class="metric-row"><span class="label">Tasa de adopción estudiantil</span><span class="value" id="metric-adopcion">0%</span></div>
+        <div class="metric-row"><span class="label">Reservas semanales vs diarias</span><span class="value" id="metric-semanal">0% / 0%</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Actividad reciente</h3>
+      <div id="actividad-reciente">
+        <div class="empty-state"><div class="icon">📋</div><h4>Sin actividad aún</h4><p>Aparecerá cuando se hagan reservas en la página principal.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEDIDOS -->
+  <section id="view-pedidos" class="view">
+    <h2>Pedidos del Día</h2>
+    <p class="subtitle">Seguimiento en tiempo real de todas las reservas procesadas hoy.</p>
+    <div class="grid grid-4" style="margin-bottom:2rem">
+      <div class="stat"><div class="num" id="ped-total">0</div><div class="label">Total pedidos</div></div>
+      <div class="stat verde"><div class="num" id="ped-completados">0</div><div class="label">Completados</div></div>
+      <div class="stat amarillo"><div class="num" id="ped-preparacion">0</div><div class="label">En preparación</div></div>
+      <div class="stat rojo"><div class="num" id="ped-cancelados">0</div><div class="label">Cancelados</div></div>
+    </div>
+    <div class="card">
+      <h3>Detalle de pedidos</h3>
+      <div id="contenedor-pedidos">
+        <div class="empty-state"><div class="icon">🍽️</div><h4>No hay pedidos registrados hoy</h4></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINANCIERO -->
+  <section id="view-financiero" class="view">
+    <h2>Estado Financiero</h2>
+    <p class="subtitle">Seguimiento de inversión, costos operativos y retorno.</p>
+    <div class="grid grid-3" style="margin-bottom:2rem">
+      <div class="stat"><div class="num" style="font-size:1.8rem">$3.785M</div><div class="label">Inversión inicial</div></div>
+      <div class="stat amarillo"><div class="num" style="font-size:1.8rem">$290K</div><div class="label">Costo operativo/mes</div></div>
+      <div class="stat verde"><div class="num" style="font-size:1.8rem" id="fin-ahorro">$0</div><div class="label">Ahorro energético/mes</div></div>
+    </div>
+    <div class="card">
+      <h3>Balance mensual</h3>
+      <table>
+        <thead><tr><th>Concepto</th><th>Monto</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Costo operativo mensual</td><td>-$290.000</td><td><span class="badge amarillo">Egreso</span></td></tr>
+          <tr><td>Subsidio descuento 10%</td><td id="fin-subsidio">-$0</td><td><span class="badge amarillo">Egreso</span></td></tr>
+          <tr><td>Ahorro energético cafetería piloto</td><td id="fin-ahorro-ener">$0</td><td><span class="badge verde">Ahorro</span></td></tr>
+          <tr style="background:#f0fdf4;font-weight:700"><td>Balance neto mensual</td><td id="fin-balance">Pendiente</td><td><span class="badge gris">En cálculo</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TÉCNICO -->
+  <section id="view-tecnico" class="view">
+    <h2>Estado Técnico del Sistema</h2>
+    <p class="subtitle">Monitoreo en tiempo real de la infraestructura tecnológica.</p>
+    <div class="grid grid-4" style="margin-bottom:2rem">
+      <div class="stat verde"><div class="num" style="font-size:1.5rem">Operativo</div><div class="label">Estado general</div></div>
+      <div class="stat"><div class="num" style="font-size:1.5rem">99.8%</div><div class="label">Uptime 30 días</div></div>
+      <div class="stat verde"><div class="num" style="font-size:1.5rem">142 ms</div><div class="label">Latencia</div></div>
+      <div class="stat amarillo"><div class="num" style="font-size:1.5rem" id="tec-firebase">0%</div><div class="label">Uso Firebase</div></div>
+    </div>
+    <div class="card">
+      <h3>Componentes técnicos</h3>
+      <div class="infra-item"><div class="info"><strong>Firebase Hosting</strong><span>platojusto.web.app · SSL activo</span></div><span class="badge verde">Operativo</span></div>
+      <div class="infra-item"><div class="info"><strong>Firebase Firestore</strong><span id="tec-firestore-info">0 MB de 1 GB</span><div class="progress-bar"><div class="progress-fill" id="tec-firestore-bar" style="width:0%"></div></div></div><span class="badge verde">Operativo</span></div>
+      <div class="infra-item"><div class="info"><strong>Dominio institucional</strong><span>platojusto.javeriana.edu.co (Simulado)</span></div><span class="badge verde">Activo</span></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p><strong>Panel Administrativo</strong> · Plato Justo · Pontificia Universidad Javeriana Bogotá</p>
+  <p style="margin-top:.5rem;opacity:.85">Acceso exclusivo para personal autorizado · Noviembre 2026</p>
+</footer>
+
+<script>
+  let pedidos = [];
+  let actividad = [];
+
+  function showView(view, btn){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+view).classList.add('active');
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function resetearTodo(){
+    if(confirm('¿Resetear todos los datos de prueba?')){
+      localStorage.removeItem('platoJustoPedidos');
+      localStorage.removeItem('platoJustoActividad');
+      pedidos = [];
+      actividad = [];
+      actualizarPanel();
+      alert('Datos reseteados correctamente.');
+    }
+  }
+
+  function cargarDatos(){
+    const pGuardados = localStorage.getItem('platoJustoPedidos');
+    const aGuardada = localStorage.getItem('platoJustoActividad');
+    if(pGuardados) pedidos = JSON.parse(pGuardados);
+    if(aGuardada) actividad = JSON.parse(aGuardada);
+    actualizarPanel();
+  }
+
+  function actualizarPanel(){
+    const total = pedidos.length;
+    document.getElementById('dash-pedidos').textContent = total;
+    document.getElementById('dash-ahorro').textContent = '$' + (total * 800).toLocaleString();
+    document.getElementById('caf-pecera').textContent = total;
+    document.getElementById('ped-total').textContent = total;
+    document.getElementById('ped-completados').textContent = total; // En demo, todos completados
+    
+    if(total > 0){
+      document.getElementById('dash-alert').innerHTML = '<strong>Estado:</strong> Operativo · ' + total + ' pedidos registrados hoy';
+      document.getElementById('dash-alert').className = 'alert alert-success';
+      document.getElementById('metric-adopcion').textContent = '78%';
+      document.getElementById('metric-semanal').textContent = '64% / 36%';
+    }
+
+    // Renderizar pedidos
+    const contenedor = document.getElementById('contenedor-pedidos');
+    if(total === 0){
+      contenedor.innerHTML = '<div class="empty-state"><div class="icon">🍽️</div><h4>No hay pedidos registrados hoy</h4></div>';
+    } else {
+      contenedor.innerHTML = `<table><thead><tr><th>ID</th><th>Estudiante</th><th>Plato</th><th>Hora</th><th>Estado</th><th>Modalidad</th></tr></thead><tbody>` + 
+        pedidos.map((p, i) => `
+          <tr>
+            <td>#PJ-${String(i+1).padStart(3,'0')}</td>
+            <td>${p.estudiante}</td>
+            <td>${p.plato}</td>
+            <td>${p.hora}</td>
+            <td><span class="badge verde">Completado</span></td>
+            <td>${p.modalidad}</td>
+          </tr>`).join('') + `</tbody></table>`;
+    }
+
+    // Renderizar actividad
+    const actDiv = document.getElementById('actividad-reciente');
+    if(actividad.length === 0){
+      actDiv.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h4>Sin actividad aún</h4></div>';
+    } else {
+      actDiv.innerHTML = actividad.slice(-5).reverse().map(a => `
+        <div class="log-entry ${a.tipo}">
+          <div class="timestamp">${a.timestamp}</div>
+          <div class="message">${a.mensaje}</div>
+        </div>`).join('');
+      document.getElementById('last-sync').textContent = 'Última sync: ' + new Date().toLocaleTimeString();
+    }
+
+    // Financiero y Técnico
+    const subsidio = total * 800;
+    document.getElementById('fin-subsidio').textContent = '-$' + subsidio.toLocaleString();
+    document.getElementById('fin-ahorro-ener').textContent = '$' + (total * 800).toLocaleString();
+    document.getElementById('fin-balance').textContent = total > 0 ? 'Autosostenible' : 'Pendiente';
+    
+    const uso = Math.min((total * 0.5), 100);
+    document.getElementById('tec-firebase').textContent = uso.toFixed(0) + '%';
+    document.getElementById('tec-firestore-info').textContent = (total * 0.005).toFixed(1) + ' MB de 1 GB';
+    document.getElementById('tec-firestore-bar').style.width = uso + '%';
+  }
+
+  // Escuchar cambios en otras pestañas del mismo navegador
+  window.addEventListener('storage', function(e) {
+    if(e.key === 'platoJustoPedidos' || e.key === 'platoJustoActividad'){
+      cargarDatos();
+    }
+  });
+
+  // Cargar al iniciar
+  cargarDatos();
+</script>
+</body>
+</html>

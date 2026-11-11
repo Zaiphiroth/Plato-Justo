@@ -746,8 +746,29 @@
   <p style="margin-top:.5rem;opacity:.75">Noviembre 2026</p>
 </footer>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDddN-iogYCGYq9izs4kXHC24BjRFlLo8Q",
+    authDomain: "plato-justo.firebaseapp.com",
+    projectId: "plato-justo",
+    storageBucket: "plato-justo.firebasestorage.app",
+    messagingSenderId: "818756525560",
+    appId: "1:818756525560:web:5dd826146d9d72c07e4a0d",
+    measurementId: "G-R140LEMSMT"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.db = db;
+  window.collection = collection;
+  window.addDoc = addDoc;
+  window.serverTimestamp = serverTimestamp;
+</script>
+
 <script>
-  // ============ DATOS SIMULADOS - MENÚS SEMANALES ============
   const menusSemanales = {
     1: [
       {id:1, nombre:"Arroz con pollo y ensalada", desc:"Pollo desmechado, arroz, ensalada fresca.", precio:9500, energia:0.8, insumos:0.6, origen:"temporada", rating:4.5},
@@ -880,6 +901,7 @@
         semana:semanaActual
       });
       ahorroTotal += (p.precio - Math.round(p.precio*0.9));
+      guardarEnFirebase(p.nombre, `${d} 12:30`, 'Autoservicio');
     });
     alert('¡Semana reservada! Revisa tus reservas.');
     actualizarAhorro();
@@ -918,10 +940,27 @@
       semana:semanaActual
     });
     ahorroTotal += (platoSeleccionado.precio - precioFinal);
+    guardarEnFirebase(platoSeleccionado.nombre, 'Hoy, 12:30', modalidad);
     cerrarModal();
     actualizarAhorro();
     renderReservas();
     alert('¡Reserva confirmada! Puedes cancelar hasta 2 horas antes.');
+  }
+
+  async function guardarEnFirebase(nombrePlato, fecha, modalidad) {
+    try {
+      await window.addDoc(window.collection(window.db, "reservas"), {
+        plato: nombrePlato,
+        fecha: fecha,
+        modalidad: modalidad,
+        estado: "completado",
+        estudiante: "2024•••789",
+        timestamp: window.serverTimestamp()
+      });
+    } catch (e) {
+      console.error("Error al guardar en Firebase: ", e);
+      alert("Hubo un error al conectar con la base de datos.");
+    }
   }
 
   function renderReservas(){

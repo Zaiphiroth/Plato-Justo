@@ -35,7 +35,7 @@
   th{background:var(--gris-claro);color:var(--azul-osc);font-weight:600;font-size:.85rem}
   tr:hover{background:#f8fafc}
   .badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.75rem;font-weight:600;}
-  .badge.verde{background:#d1fae5;color:#065f46}.badge.amarillo{background:#fef3c7;color:#78350f}.badge.gris{background:#e2e8f0;color:#475569}
+  .badge.verde{background:#d1fae5;color:#065f46}.badge.amarillo{background:#fef3c7;color:#78350f}.badge.gris{background:#e2e8f0;color:#475569}.badge.azul{background:#dbeafe;color:var(--azul)}
   .alert{padding:1rem 1.2rem;border-radius:8px;margin-bottom:1rem;border-left:4px solid;font-size:.9rem;}
   .alert-info{background:#dbeafe;border-color:var(--azul);color:var(--azul-osc)}
   .alert-success{background:#d1fae5;border-color:var(--verde);color:#065f46}
@@ -51,6 +51,8 @@
   .reset-bar{background:#fff;border:1px solid var(--gris);border-radius:8px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
   .reset-bar .info{font-size:.9rem;color:var(--texto-suave)}.reset-bar .info strong{color:var(--texto)}
   .debug-box{background:#1e293b;color:#10b981;padding:1rem;border-radius:8px;font-family:monospace;font-size:.85rem;margin-top:1rem;max-height:200px;overflow-y:auto;}
+  .cafeteria-tag{display:inline-block;padding:3px 8px;border-radius:10px;font-size:.75rem;font-weight:600;background:#dbeafe;color:var(--azul);margin-right:.3rem}
+  .hora-tag{display:inline-block;padding:3px 8px;border-radius:10px;font-size:.75rem;font-weight:600;background:#fef3c7;color:#78350f}
   footer{background:var(--azul-osc);color:#fff;padding:2rem;margin-top:3rem;text-align:center;font-size:.85rem;}
   @media(max-width:768px){main{padding:1rem}.header-top{flex-direction:column;gap:1rem;text-align:center}nav{justify-content:center}}
 </style>
@@ -64,6 +66,7 @@
     <nav>
       <button class="active" onclick="showView('dashboard',this)">Dashboard</button>
       <button onclick="showView('pedidos',this)">Pedidos del Día</button>
+      <button onclick="showView('cafeterias',this)">Por Cafetería</button>
     </nav>
   </div>
 </header>
@@ -90,8 +93,12 @@
       <div class="card">
         <h3>Pedidos de hoy por cafetería</h3>
         <table><thead><tr><th>Cafetería</th><th>Pedidos</th><th>Estado</th></tr></thead>
-        <tbody><tr><td>La Pecera</td><td id="caf-pecera">0</td><td><span class="badge gris">Esperando</span></td></tr>
-        <tr><td>Atrio</td><td>0</td><td><span class="badge gris">No iniciado</span></td></tr></tbody></table>
+        <tbody>
+          <tr><td>Giraldo</td><td id="caf-giraldo">0</td><td><span class="badge gris">Esperando</span></td></tr>
+          <tr><td>Básicas</td><td id="caf-basicas">0</td><td><span class="badge gris">Esperando</span></td></tr>
+          <tr><td>La Central</td><td id="caf-central">0</td><td><span class="badge gris">Esperando</span></td></tr>
+          <tr><td>Atrio</td><td id="caf-atrio">0</td><td><span class="badge gris">Esperando</span></td></tr>
+        </tbody></table>
       </div>
       <div class="card">
         <h3>Actividad reciente (Tiempo Real)</h3>
@@ -110,6 +117,21 @@
     <div class="card">
       <h3>Detalle de pedidos</h3>
       <div id="contenedor-pedidos"><div class="empty-state"><div class="icon">🍽️</div><h4>No hay pedidos registrados hoy</h4></div></div>
+    </div>
+  </section>
+
+  <section id="view-cafeterias" class="view">
+    <h2>Distribución por Cafetería y Hora</h2>
+    <p class="subtitle">Vista detallada de cómo se distribuyen los pedidos entre las cafeterías y horarios.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Pedidos por cafetería</h3>
+        <div id="resumen-cafeterias"><div class="empty-state"><div class="icon">🏪</div><h4>Sin datos aún</h4></div></div>
+      </div>
+      <div class="card">
+        <h3>Pedidos por hora de recogida</h3>
+        <div id="resumen-horas"><div class="empty-state"><div class="icon">🕐</div><h4>Sin datos aún</h4></div></div>
+      </div>
     </div>
   </section>
 </main>
@@ -143,7 +165,6 @@
   addDebug("Inicializando Firebase...");
   addDebug("Proyecto: " + firebaseConfig.projectId);
 
-  // SIN orderBy - así no necesita índice
   const q = collection(db, "reservas");
   
   addDebug("Escuchando colección 'reservas'...");
@@ -153,7 +174,7 @@
     const pedidos = [];
     snapshot.forEach((doc) => {
       const data = doc.data();
-      addDebug(`Doc: ${doc.id} - Plato: ${data.plato}`);
+      addDebug(`Doc: ${doc.id} - Plato: ${data.plato} - Cafetería: ${data.cafeteria || 'N/A'}`);
       pedidos.push({ id: doc.id, ...data });
     });
     actualizarPanel(pedidos);
@@ -170,22 +191,38 @@
     const total = pedidos.length;
     document.getElementById('dash-pedidos').textContent = total;
     document.getElementById('dash-ahorro').textContent = '$' + (total * 800).toLocaleString();
-    document.getElementById('caf-pecera').textContent = total;
     document.getElementById('ped-total').textContent = total;
     document.getElementById('ped-completados').textContent = total;
+
+    // Conteo por cafetería
+    const conteoCafeterias = { 'Giraldo': 0, 'Básicas': 0, 'La Central': 0, 'Atrio': 0 };
+    const conteoHoras = { '11:30': 0, '12:00': 0, '12:30': 0, '1:00': 0, '1:30': 0 };
+    
+    pedidos.forEach(p => {
+      const caf = p.cafeteria || 'Giraldo';
+      const hora = p.hora || '12:30';
+      if (conteoCafeterias[caf] !== undefined) conteoCafeterias[caf]++;
+      if (conteoHoras[hora] !== undefined) conteoHoras[hora]++;
+    });
+
+    document.getElementById('caf-giraldo').textContent = conteoCafeterias['Giraldo'];
+    document.getElementById('caf-basicas').textContent = conteoCafeterias['Básicas'];
+    document.getElementById('caf-central').textContent = conteoCafeterias['La Central'];
+    document.getElementById('caf-atrio').textContent = conteoCafeterias['Atrio'];
 
     if (total > 0) {
       document.getElementById('dash-alert').innerHTML = `<strong>Estado:</strong> Operativo · ${total} pedidos registrados hoy`;
       document.getElementById('dash-alert').className = 'alert alert-success';
       
       document.getElementById('contenedor-pedidos').innerHTML = `
-        <table><thead><tr><th>ID</th><th>Estudiante</th><th>Plato</th><th>Hora</th><th>Estado</th><th>Modalidad</th></tr></thead><tbody>
+        <table><thead><tr><th>ID</th><th>Estudiante</th><th>Plato</th><th>Cafetería</th><th>Hora</th><th>Estado</th><th>Modalidad</th></tr></thead><tbody>
         ${pedidos.map((p, i) => `
           <tr>
             <td>#PJ-${String(i+1).padStart(3,'0')}</td>
             <td>${p.estudiante || 'N/A'}</td>
             <td>${p.plato}</td>
-            <td>${p.fecha}</td>
+            <td><span class="cafeteria-tag">${p.cafeteria || 'Giraldo'}</span></td>
+            <td><span class="hora-tag">${p.hora || '12:30'}</span></td>
             <td><span class="badge verde">Completado</span></td>
             <td>${p.modalidad}</td>
           </tr>`).join('')}
@@ -193,9 +230,30 @@
 
       document.getElementById('actividad-reciente').innerHTML = pedidos.slice(0, 5).map(p => `
         <div class="log-entry success">
-          <div class="timestamp">${p.fecha || 'Ahora'}</div>
-          <div class="message">Reserva confirmada: ${p.estudiante || 'Estudiante'} · ${p.plato}</div>
+          <div class="timestamp">${p.fecha || 'Ahora'} · ${p.cafeteria || 'Giraldo'}</div>
+          <div class="message">Reserva confirmada: ${p.estudiante || 'Estudiante'} · ${p.plato} · Recoge a las ${p.hora || '12:30'}</div>
         </div>`).join('');
+
+      // Resumen por cafetería
+      document.getElementById('resumen-cafeterias').innerHTML = Object.entries(conteoCafeterias)
+        .sort((a,b) => b[1] - a[1])
+        .map(([caf, count]) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--gris)">
+            <span><span class="cafeteria-tag">${caf}</span></span>
+            <strong style="color:var(--azul-osc);font-size:1.1rem">${count} pedidos</strong>
+          </div>`).join('');
+
+      // Resumen por hora
+      document.getElementById('resumen-horas').innerHTML = Object.entries(conteoHoras)
+        .sort((a,b) => a[0].localeCompare(b[0]))
+        .map(([hora, count]) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--gris)">
+            <span><span class="hora-tag">${hora}</span></span>
+            <strong style="color:var(--azul-osc);font-size:1.1rem">${count} pedidos</strong>
+          </div>`).join('');
+    } else {
+      document.getElementById('resumen-cafeterias').innerHTML = '<div class="empty-state"><div class="icon">🏪</div><h4>Sin datos aún</h4></div>';
+      document.getElementById('resumen-horas').innerHTML = '<div class="empty-state"><div class="icon">🕐</div><h4>Sin datos aún</h4></div>';
     }
   }
 

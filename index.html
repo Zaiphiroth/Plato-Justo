@@ -236,6 +236,15 @@
     padding-top:.5rem;border-top:1px dashed var(--gris);
   }
 
+  .rentabilidad-box{
+    background:linear-gradient(135deg,var(--amarillo),var(--amarillo-osc));
+    color:var(--texto);padding:1.2rem;border-radius:10px;margin-top:1rem;
+    border-left:4px solid var(--azul-osc);
+  }
+  .rentabilidad-box h4{color:var(--azul-osc);margin-bottom:.5rem}
+  .rentabilidad-box ul{margin-left:1.2rem;font-size:.9rem}
+  .rentabilidad-box li{margin-bottom:.3rem}
+
   @media(max-width:600px){
     main{padding:1rem}
     h1{font-size:1.5rem}
@@ -383,10 +392,11 @@
             <li>App estudiante y panel web de cafetería.</li>
             <li>Base de datos Firebase Firestore (capa gratuita).</li>
             <li>Algoritmos heurísticos propios (sin APIs de IA de pago).</li>
-            <li>Levantamiento manual de datos de precios.</li>
+            <li>Levantamiento manual de datos de precios (precios reales de la zona).</li>
             <li>Optimización de hornos y equipos de cocción.</li>
             <li>Acceso vía QR (sin descarga).</li>
             <li>Dominio institucional <code>platojusto.javeriana.edu.co</code>.</li>
+            <li>Selección de cafetería y hora de recogida (Giraldo, Básicas, La Central, Atrio).</li>
           </ul>
         </div>
         <div class="costo-block" style="border-left-color:var(--texto-suave)">
@@ -401,7 +411,7 @@
       </div>
     </div>
 
-    <!-- NUEVA SECCIÓN: AHORRO ENERGÉTICO PARA LA JAVERIANA BOGOTÁ -->
+    <!-- AHORRO ENERGÉTICO -->
     <div class="card">
       <h2>Ahorro energético proyectado · Javeriana Bogotá</h2>
       <p class="subtitle">Estimación del impacto real sobre el consumo eléctrico del campus, contextualizada con datos de una cafetería universitaria típica en Bogotá.</p>
@@ -428,7 +438,7 @@
       <div class="costo-block">
         <h4>1. Línea base de consumo</h4>
         <p style="font-size:.9rem;color:var(--texto-suave)">
-          Una cafetería universitaria de tamaño medio en Bogotá (como las del edificio San Ignacio o Nuevo de Mendoza) consume aproximadamente <strong>4.000 kWh mensuales</strong>. De ese total, los equipos de cocción (hornos, freidores, estufas industriales) representan alrededor del <strong>35%</strong>, es decir, ~1.400 kWh/mes. Las neveras, aunque también consumen, no se pueden apagar por norma sanitaria, así que no entran en la optimización.
+          Una cafetería universitaria de tamaño medio en Bogotá consume aproximadamente <strong>4.000 kWh mensuales</strong>. De ese total, los equipos de cocción (hornos, freidores, estufas industriales) representan alrededor del <strong>35%</strong>, es decir, ~1.400 kWh/mes. Las neveras, aunque también consumen, no se pueden apagar por norma sanitaria, así que no entran en la optimización.
         </p>
         <div class="fuente-dato">Fuente: rangos típicos reportados por la Superintendencia de Servicios para comercios del sector alimentos en Bogotá (estrato comercial).</div>
       </div>
@@ -470,7 +480,57 @@
       </div>
     </div>
 
-    <!-- NUEVA SECCIÓN: FINANCIACIÓN DEL PROYECTO -->
+    <!-- RENTABILIDAD DEL NEGOCIO -->
+    <div class="card">
+      <h2>¿Es rentable para la cafetería?</h2>
+      <p class="subtitle">Análisis de viabilidad económica para el operador del negocio (cafetería).</p>
+
+      <div class="alert alert-success">
+        <strong>Conclusión:</strong> Sí, el modelo es rentable para la cafetería. No solo se protege el margen de ganancia, sino que se generan ahorros operativos directos y se reduce el riesgo financiero.
+      </div>
+
+      <div class="grid grid-2">
+        <div class="rentabilidad-box">
+          <h4>Beneficios económicos directos</h4>
+          <ul>
+            <li><strong>Reducción de desperdicio:</strong> al cocinar solo lo reservado, se elimina el 15-20% de comida que normalmente se bota al final del día. Con un corrientazo promedio de $15.000 y 100 almuerzos diarios, esto representa ~$225.000-$300.000 COP diarios en insumos no desperdiciados.</li>
+            <li><strong>Ahorro energético:</strong> ~$370.000 COP/mes por cafetería en factura eléctrica.</li>
+            <li><strong>Compras planificadas:</strong> al saber con anticipación qué se va a vender, se puede comprar al por mayor en Corabastos, reduciendo el costo de insumos entre 10-15%.</li>
+            <li><strong>Menos personal en hora pico:</strong> el modelo de autoservicio con reserva reduce la necesidad de cajeros adicionales en horas pico.</li>
+          </ul>
+        </div>
+        <div class="rentabilidad-box" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">
+          <h4>Proyección de rentabilidad mensual</h4>
+          <ul>
+            <li><strong>Ahorro por desperdicio evitado:</strong> ~$4.500.000 - $6.000.000 COP/mes (estimado para 100 almuerzos/día × 22 días hábiles).</li>
+            <li><strong>Ahorro energético:</strong> ~$370.000 COP/mes.</li>
+            <li><strong>Ahorro en compras:</strong> ~$500.000 - $800.000 COP/mes por compras planificadas.</li>
+            <li><strong>Costo del 10% de descuento:</strong> ~$330.000 COP/mes (100 reservas × $15.000 × 10% × 22 días).</li>
+            <li><strong>Beneficio neto estimado:</strong> ~$5.000.000 - $6.800.000 COP/mes por cafetería.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="nota-costo" style="margin-top:1rem">
+        <strong>Nota importante:</strong> estos cálculos se basan en precios reales de la zona (corrientazos entre $12.000 y $18.000, con promedio de ~$15.000). La rentabilidad no depende de subir precios, sino de <strong>eliminar ineficiencias</strong>: desperdicio, energía mal usada y compras de último minuto.
+      </div>
+
+      <div class="costo-block" style="margin-top:1rem">
+        <h4>Comparación: sin app vs. con app</h4>
+        <table style="margin-top:.5rem">
+          <thead><tr><th>Concepto</th><th>Sin app</th><th>Con Plato Justo</th></tr></thead>
+          <tbody>
+            <tr><td>Desperdicio diario estimado</td><td>15-20% de la producción</td><td>&lt; 3%</td></tr>
+            <tr><td>Consumo energético hornos</td><td>Encendidos toda la mañana</td><td>Solo en ventanas necesarias</td></tr>
+            <tr><td>Compras de insumos</td><td>Diarias, precios variables</td><td>Semanales, precios mayoristas</td></tr>
+            <tr><td>Riesgo financiero</td><td>Alto (cocina "por si acaso")</td><td>Bajo (demanda conocida)</td></tr>
+            <tr><td>Margen de ganancia</td><td>Presionado por costos</td><td>Protegido y predecible</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FINANCIACIÓN -->
     <div class="card">
       <h2>Financiamiento del proyecto</h2>
       <p class="subtitle">Modelo de inversión institucional con recursos propios de la universidad.</p>
@@ -514,6 +574,7 @@
       </div>
     </div>
 
+    <!-- PRESUPUESTO -->
     <div class="card">
       <h2>Presupuesto Detallado (COP)</h2>
       <p class="subtitle">Valores estimados para el desarrollo y operación del piloto, financiados por la universidad.</p>
@@ -551,18 +612,18 @@
             <tr class="total-row"><td>Subtotal Operación</td><td>-</td><td>Mes</td><td>-</td><td>$210.000</td></tr>
 
             <tr><td colspan="5" style="background:#dbeafe; font-weight:700; color:var(--azul-osc); padding-top:1.5rem;">4. Costos Variables</td></tr>
-            <tr><td>Descuento del 10% (Ej: 100 res/mes × $8.000)</td><td>100</td><td>Reservas/mes</td><td>$800</td><td>$80.000</td></tr>
+            <tr><td>Descuento del 10% (Ej: 100 res/mes × $15.000 promedio)</td><td>100</td><td>Reservas/mes</td><td>$1.500</td><td>$150.000</td></tr>
             <tr><td>Exceso de transferencia Firebase (si aplica)</td><td>0</td><td>GB</td><td>$600</td><td>$0</td></tr>
             <tr><td>Provisión para imprevistos (10% del desarrollo)</td><td>1</td><td>Global</td><td>$340.000</td><td>$340.000</td></tr>
-            <tr class="total-row"><td>Subtotal Variables</td><td>-</td><td>-</td><td>-</td><td>$420.000</td></tr>
+            <tr class="total-row"><td>Subtotal Variables</td><td>-</td><td>-</td><td>-</td><td>$490.000</td></tr>
 
             <tr style="background:var(--azul); color:#fff; font-size:1.1rem;">
               <td colspan="4" style="text-align:right; font-weight:700; padding:1rem;">INVERSIÓN INICIAL (Asume la universidad)</td>
-              <td style="font-weight:700; padding:1rem;">$3.785.000</td>
+              <td style="font-weight:700; padding:1rem;">$3.855.000</td>
             </tr>
             <tr style="background:var(--azul-osc); color:#fff; font-size:1rem;">
               <td colspan="4" style="text-align:right; font-weight:700; padding:1rem;">COSTO OPERATIVO MENSUAL (Mes 2 en adelante)</td>
-              <td style="font-weight:700; padding:1rem;">$290.000 + descuento</td>
+              <td style="font-weight:700; padding:1rem;">$360.000 + descuento</td>
             </tr>
             <tr style="background:var(--verde); color:#fff; font-size:1rem;">
               <td colspan="4" style="text-align:right; font-weight:700; padding:1rem;">Ahorro energético mensual esperado (por cafetería)</td>
@@ -621,7 +682,7 @@
           Estos dependen del uso real de la app:
         </p>
         <ul>
-          <li><strong>Descuento del 10%:</strong> no es un costo de software, sino un beneficio al estudiante. Se estima en $80.000 COP/mes para 100 reservas con precio promedio de $8.000. <strong>Lo asume el Fondo de Bienestar Universitario</strong> como parte de su política de apoyo estudiantil.</li>
+          <li><strong>Descuento del 10%:</strong> no es un costo de software, sino un beneficio al estudiante. Se estima en $150.000 COP/mes para 100 reservas con precio promedio de $15.000 (precio real de corrientazo en la zona). <strong>Lo asume el Fondo de Bienestar Universitario</strong> como parte de su política de apoyo estudiantil.</li>
           <li><strong>Exceso de transferencia:</strong> solo aplica si se supera el límite de 360 MB/día de Firebase. En el piloto es improbable.</li>
           <li><strong>Imprevistos (10%):</strong> provisión presupuestal estándar para ajustes no contemplados.</li>
         </ul>
@@ -699,7 +760,7 @@
       <ol style="margin-left:1.5rem; margin-top:.5rem">
         <li>Reservas semanales precisas = La cafetería compra <strong>exactamente</strong> lo necesario.</li>
         <li>Menos compra de insumos de último minuto (más caros) y menos desperdicio de comida ya cocinada.</li>
-        <li>Encendido programado de hornos solo en ventanas de tiempo necesarias = Ahorro directo en factura de energía (ver sección de ahorro energético Javeriana Bogotá).</li>
+        <li>Encendido programado de hornos solo en ventanas de tiempo necesarias = Ahorro directo en factura de energía.</li>
         <li>La cafetería protege su margen sin subir el precio, y el estudiante obtiene un <strong>10% de descuento</strong> por garantizar la venta anticipada.</li>
       </ol>
     </div>
@@ -720,8 +781,23 @@
     </div>
     <div id="modal-plato-info"></div>
     <div class="form-group">
-      <label>Fecha y hora</label>
-      <input type="text" id="modal-fecha" readonly>
+      <label>Cafetería donde recoger</label>
+      <select id="modal-cafeteria">
+        <option value="Giraldo">Giraldo</option>
+        <option value="Básicas">Básicas</option>
+        <option value="La Central">La Central</option>
+        <option value="Atrio">Atrio</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Hora de recogida</label>
+      <select id="modal-hora">
+        <option value="11:30">11:30 AM</option>
+        <option value="12:00" selected>12:00 PM</option>
+        <option value="12:30">12:30 PM</option>
+        <option value="1:00">1:00 PM</option>
+        <option value="1:30">1:30 PM</option>
+      </select>
     </div>
     <div class="form-group">
       <label>Modalidad</label>
@@ -742,8 +818,7 @@
 
 <footer>
   <p><strong>Plato Justo</strong> · MVP · Pontificia Universidad Javeriana · Bogotá</p>
-  <p style="margin-top:.5rem;opacity:.85">Proyecto académico · Datos simulados para demostración</p>
-  <p style="margin-top:.5rem;opacity:.75">Noviembre 2026</p>
+  <p style="margin-top:.5rem;opacity:.85">Proyecto académico · Precios basados en levantamiento real de la zona · Noviembre 2026</p>
 </footer>
 
 <script type="module">
@@ -769,34 +844,35 @@
 </script>
 
 <script>
+  // MENÚS CON PRECIOS REALES DE LA ZONA (corrientazos entre $12.000 y $18.000)
   const menusSemanales = {
     1: [
-      {id:1, nombre:"Arroz con pollo y ensalada", desc:"Pollo desmechado, arroz, ensalada fresca.", precio:9500, energia:0.8, insumos:0.6, origen:"temporada", rating:4.5},
-      {id:2, nombre:"Lentejas con arroz", desc:"Plato vegetariano alto en proteína.", precio:7500, energia:0.5, insumos:0.4, origen:"mayorista", rating:4.2},
-      {id:3, nombre:"Bandeza de frijoles", desc:"Frijoles, arroz, huevo y patacón.", precio:8500, energia:0.7, insumos:0.5, origen:"temporada", rating:4.6},
-      {id:4, nombre:"Sopa de verduras + arroz", desc:"Sopa ligera con verduras de temporada.", precio:6500, energia:0.3, insumos:0.3, origen:"mayorista", rating:4.0},
-      {id:5, nombre:"Pasta con salsa de tomate", desc:"Pasta con salsa casera y queso.", precio:8000, energia:0.4, insumos:0.4, origen:"temporada", rating:4.3}
+      {id:1, nombre:"Arroz con pollo y ensalada", desc:"Pollo desmechado, arroz, ensalada fresca, papa.", precio:14500, energia:0.8, insumos:0.6, origen:"temporada", rating:4.5},
+      {id:2, nombre:"Lentejas con arroz", desc:"Lentejas guisadas, arroz, huevo, plátano.", precio:12000, energia:0.5, insumos:0.4, origen:"mayorista", rating:4.2},
+      {id:3, nombre:"Bandeza de frijoles", desc:"Frijoles, arroz, huevo, carne molida, patacón.", precio:15000, energia:0.7, insumos:0.5, origen:"temporada", rating:4.6},
+      {id:4, nombre:"Sopa de verduras + arroz", desc:"Sopa ligera con verduras de temporada, arroz.", precio:12000, energia:0.3, insumos:0.3, origen:"mayorista", rating:4.0},
+      {id:5, nombre:"Pasta con salsa de tomate", desc:"Pasta con salsa casera, queso, ensalada.", precio:13500, energia:0.4, insumos:0.4, origen:"temporada", rating:4.3}
     ],
     2: [
-      {id:6, nombre:"Bandeja paisa económica", desc:"Frijoles, arroz, carne molida, huevo, plátano.", precio:9800, energia:0.9, insumos:0.7, origen:"temporada", rating:4.7},
-      {id:7, nombre:"Ajiaco de pollo", desc:"Sopa tradicional con pollo y papa.", precio:8800, energia:0.6, insumos:0.5, origen:"mayorista", rating:4.4},
-      {id:8, nombre:"Arroz con atún", desc:"Atún en salsa con arroz y ensalada.", precio:7800, energia:0.4, insumos:0.4, origen:"mayorista", rating:4.1},
-      {id:9, nombre:"Caldo de costilla", desc:"Caldo tradicional con costilla y papa.", precio:7200, energia:0.5, insumos:0.4, origen:"temporada", rating:4.3},
-      {id:10, nombre:"Arroz con huevo frito", desc:"Arroz, huevo frito, ensalada y patacón.", precio:6800, energia:0.3, insumos:0.3, origen:"temporada", rating:4.0}
+      {id:6, nombre:"Bandeja paisa económica", desc:"Frijoles, arroz, carne molida, huevo, plátano.", precio:15000, energia:0.9, insumos:0.7, origen:"temporada", rating:4.7},
+      {id:7, nombre:"Ajiaco de pollo", desc:"Sopa tradicional con pollo, papa, alcaparras.", precio:17000, energia:0.6, insumos:0.5, origen:"mayorista", rating:4.4},
+      {id:8, nombre:"Arroz con atún", desc:"Atún en salsa con arroz y ensalada fresca.", precio:14500, energia:0.4, insumos:0.4, origen:"mayorista", rating:4.1},
+      {id:9, nombre:"Caldo de costilla", desc:"Caldo tradicional con costilla, papa, cilantro.", precio:13500, energia:0.5, insumos:0.4, origen:"temporada", rating:4.3},
+      {id:10, nombre:"Arroz con huevo frito", desc:"Arroz, huevo frito, ensalada, patacón, papa.", precio:12000, energia:0.3, insumos:0.3, origen:"temporada", rating:4.0}
     ],
     3: [
-      {id:11, nombre:"Sancocho de gallina", desc:"Sopa espesa con gallina y verduras.", precio:9200, energia:0.8, insumos:0.6, origen:"temporada", rating:4.6},
-      {id:12, nombre:"Arroz con pollo sudado", desc:"Pollo en salsa con arroz blanco.", precio:8500, energia:0.6, insumos:0.5, origen:"mayorista", rating:4.3},
-      {id:13, nombre:"Frijoles con carne", desc:"Frijoles con carne desmechada y arroz.", precio:8800, energia:0.7, insumos:0.5, origen:"temporada", rating:4.5},
-      {id:14, nombre:"Sopa de lentejas", desc:"Lentejas con verduras y arroz.", precio:7000, energia:0.4, insumos:0.4, origen:"mayorista", rating:4.2},
-      {id:15, nombre:"Arroz con menestra", desc:"Menestra de verduras con arroz.", precio:6500, energia:0.3, insumos:0.3, origen:"temporada", rating:4.1}
+      {id:11, nombre:"Sancocho de gallina", desc:"Sopa espesa con gallina, papa, yuca, plátano.", precio:17000, energia:0.8, insumos:0.6, origen:"temporada", rating:4.6},
+      {id:12, nombre:"Arroz con pollo sudado", desc:"Pollo en salsa con arroz blanco, ensalada.", precio:14500, energia:0.6, insumos:0.5, origen:"mayorista", rating:4.3},
+      {id:13, nombre:"Frijoles con carne", desc:"Frijoles con carne desmechada, arroz, plátano.", precio:15000, energia:0.7, insumos:0.5, origen:"temporada", rating:4.5},
+      {id:14, nombre:"Sopa de lentejas", desc:"Lentejas con verduras, arroz, aguacate.", precio:12000, energia:0.4, insumos:0.4, origen:"mayorista", rating:4.2},
+      {id:15, nombre:"Arroz con menestra", desc:"Menestra de verduras con arroz, huevo.", precio:12000, energia:0.3, insumos:0.3, origen:"temporada", rating:4.1}
     ],
     4: [
-      {id:16, nombre:"Bandeja de carne asada", desc:"Carne asada, arroz, papa y ensalada.", precio:10500, energia:0.9, insumos:0.7, origen:"temporada", rating:4.8},
-      {id:17, nombre:"Arroz con pollo a la plancha", desc:"Pollo a la plancha con arroz y verduras.", precio:9000, energia:0.7, insumos:0.5, origen:"mayorista", rating:4.4},
-      {id:18, nombre:"Sopa de pollo con fideos", desc:"Sopa ligera con fideos y pollo.", precio:7500, energia:0.5, insumos:0.4, origen:"temporada", rating:4.2},
-      {id:19, nombre:"Arroz con huevo perico", desc:"Huevo revuelto con tomate y cebolla, arroz.", precio:7000, energia:0.3, insumos:0.3, origen:"mayorista", rating:4.1},
-      {id:20, nombre:"Lentejas vegetarianas", desc:"Lentejas con verduras, sin carne.", precio:7200, energia:0.4, insumos:0.4, origen:"temporada", rating:4.3}
+      {id:16, nombre:"Bandeja de carne asada", desc:"Carne asada, arroz, papa, ensalada, plátano.", precio:18000, energia:0.9, insumos:0.7, origen:"temporada", rating:4.8},
+      {id:17, nombre:"Arroz con pollo a la plancha", desc:"Pollo a la plancha, arroz, verduras salteadas.", precio:15000, energia:0.7, insumos:0.5, origen:"mayorista", rating:4.4},
+      {id:18, nombre:"Sopa de pollo con fideos", desc:"Sopa ligera con fideos, pollo desmechado.", precio:13500, energia:0.5, insumos:0.4, origen:"temporada", rating:4.2},
+      {id:19, nombre:"Arroz con huevo perico", desc:"Huevo revuelto con tomate y cebolla, arroz.", precio:12000, energia:0.3, insumos:0.3, origen:"mayorista", rating:4.1},
+      {id:20, nombre:"Lentejas vegetarianas", desc:"Lentejas con verduras, arroz, aguacate.", precio:12000, energia:0.4, insumos:0.4, origen:"temporada", rating:4.3}
     ]
   };
 
@@ -891,17 +967,20 @@
       const sel = document.getElementById('sel-'+d);
       const id = parseInt(sel.value);
       const p = platos.find(x=>x.id===id);
+      const precioFinal = Math.round(p.precio*0.9);
       reservas.push({
         id:Date.now()+Math.random(),
         plato:p.nombre,
-        precio:Math.round(p.precio*0.9),
+        precio:precioFinal,
         precioOriginal:p.precio,
         fecha:`${d} 12:30`,
+        cafeteria:'Giraldo',
+        hora:'12:30',
         modalidad:'Autoservicio',
         semana:semanaActual
       });
-      ahorroTotal += (p.precio - Math.round(p.precio*0.9));
-      guardarEnFirebase(p.nombre, `${d} 12:30`, 'Autoservicio');
+      ahorroTotal += (p.precio - precioFinal);
+      guardarEnFirebase(p.nombre, `${d} 12:30`, 'Autoservicio', 'Giraldo', '12:30');
     });
     alert('¡Semana reservada! Revisa tus reservas.');
     actualizarAhorro();
@@ -919,7 +998,6 @@
         <span class="precio">$${precioFinal.toLocaleString()}</span>
       </div>
     `;
-    document.getElementById('modal-fecha').value = 'Hoy, 12:30 pm';
     document.getElementById('modal-reserva').classList.add('active');
   }
 
@@ -929,30 +1007,36 @@
 
   function confirmarReserva(){
     const modalidad = document.getElementById('modal-modalidad').value;
+    const cafeteria = document.getElementById('modal-cafeteria').value;
+    const hora = document.getElementById('modal-hora').value;
     const precioFinal = Math.round(platoSeleccionado.precio*0.9);
     reservas.push({
       id:Date.now(),
       plato:platoSeleccionado.nombre,
       precio:precioFinal,
       precioOriginal:platoSeleccionado.precio,
-      fecha:'Hoy, 12:30',
+      fecha:`Hoy, ${hora}`,
+      cafeteria:cafeteria,
+      hora:hora,
       modalidad:modalidad,
       semana:semanaActual
     });
     ahorroTotal += (platoSeleccionado.precio - precioFinal);
-    guardarEnFirebase(platoSeleccionado.nombre, 'Hoy, 12:30', modalidad);
+    guardarEnFirebase(platoSeleccionado.nombre, `Hoy, ${hora}`, modalidad, cafeteria, hora);
     cerrarModal();
     actualizarAhorro();
     renderReservas();
-    alert('¡Reserva confirmada! Puedes cancelar hasta 2 horas antes.');
+    alert(`¡Reserva confirmada! Recoge en ${cafeteria} a las ${hora}. Puedes cancelar hasta 2 horas antes.`);
   }
 
-  async function guardarEnFirebase(nombrePlato, fecha, modalidad) {
+  async function guardarEnFirebase(nombrePlato, fecha, modalidad, cafeteria, hora) {
     try {
       await window.addDoc(window.collection(window.db, "reservas"), {
         plato: nombrePlato,
         fecha: fecha,
         modalidad: modalidad,
+        cafeteria: cafeteria,
+        hora: hora,
         estado: "completado",
         estudiante: "2024•••789",
         timestamp: window.serverTimestamp()
@@ -973,7 +1057,7 @@
       <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem">
         <div>
           <div style="font-weight:700;color:var(--azul-osc)">${r.plato}</div>
-          <div style="font-size:.88rem;color:var(--texto-suave)">${r.fecha} · ${r.modalidad} · Semana ${r.semana}</div>
+          <div style="font-size:.88rem;color:var(--texto-suave)">${r.fecha} · ${r.cafeteria} · ${r.modalidad} · Semana ${r.semana}</div>
           <div style="font-size:.9rem;margin-top:.4rem">
             <span class="precio-antiguo">$${r.precioOriginal.toLocaleString()}</span>
             <strong style="color:var(--verde)">$${r.precio.toLocaleString()}</strong>

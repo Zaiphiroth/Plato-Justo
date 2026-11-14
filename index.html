@@ -110,8 +110,6 @@
   .btn-sm{padding:.45rem .9rem;font-size:.85rem}
   .btn-outline{background:transparent;color:var(--azul);border:2px solid var(--azul)}
   .btn-outline:hover{background:var(--azul);color:#fff}
-  .btn-danger{background:var(--rojo);color:#fff;border:none}
-  .btn-danger:hover{background:#b91c1c}
 
   .reserva-modal{
     display:none;position:fixed;top:0;left:0;width:100%;height:100%;
@@ -325,7 +323,7 @@
 
     <div id="tab-reservas" class="tab-content">
       <h2>Mis reservas</h2>
-      <p class="subtitle">Puedes cancelar hasta 2 horas antes del almuerzo. Al cancelar, la reserva se elimina de la base de datos.</p>
+      <p class="subtitle">Puedes cancelar hasta 2 horas antes del almuerzo.</p>
       <div id="lista-reservas"></div>
     </div>
   </section>
@@ -572,7 +570,7 @@
       </div>
 
       <div class="nota-costo">
-        <strong>Conclusión financiera:</strong> la universidad asume la inversión inicial (~$3.855.000 COP) como un proyecto de bienestar y sostenibilidad. El ahorro energético mensual (~$370.000 COP por cafetería) permite que el sistema se autofinancie operativamente, y el beneficio al estudiante (10% de descuento) se cubre con el Fondo de Bienestar como una inversión social con retorno medible.
+        <strong>Conclusión financiera:</strong> la universidad asume la inversión inicial (~$3.785.000 COP) como un proyecto de bienestar y sostenibilidad. El ahorro energético mensual (~$370.000 COP por cafetería) permite que el sistema se autofinancie operativamente, y el beneficio al estudiante (10% de descuento) se cubre con el Fondo de Bienestar como una inversión social con retorno medible.
       </div>
     </div>
 
@@ -813,7 +811,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
-      <button class="btn" id="btn-confirmar-reserva">Reservar</button>
+      <button class="btn" onclick="confirmarReserva()">Reservar</button>
     </div>
   </div>
 </div>
@@ -825,7 +823,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDddN-iogYCGYq9izs4kXHC24BjRFlLo8Q",
@@ -842,8 +840,6 @@
   window.db = db;
   window.collection = collection;
   window.addDoc = addDoc;
-  window.deleteDoc = deleteDoc;
-  window.doc = doc;
   window.serverTimestamp = serverTimestamp;
 </script>
 
@@ -966,45 +962,29 @@
     `).join('');
   }
 
-  async function reservarSemana(){
-    const btn = event.target;
-    btn.disabled = true;
-    btn.textContent = 'Procesando...';
-    
-    try {
-      for (let d of dias) {
-        const sel = document.getElementById('sel-'+d);
-        const id = parseInt(sel.value);
-        const p = platos.find(x=>x.id===id);
-        const precioFinal = Math.round(p.precio*0.9);
-        
-        // Guardar en Firebase y obtener el ID del documento
-        const docId = await guardarEnFirebase(p.nombre, `${d} 12:30`, 'Autoservicio', 'Giraldo', '12:30');
-        
-        reservas.push({
-          id: Date.now()+Math.random(),
-          docId: docId, // ID del documento en Firebase para poder borrarlo
-          plato: p.nombre,
-          precio: precioFinal,
-          precioOriginal: p.precio,
-          fecha: `${d} 12:30`,
-          cafeteria: 'Giraldo',
-          hora: '12:30',
-          modalidad: 'Autoservicio',
-          semana: semanaActual
-        });
-        ahorroTotal += (p.precio - precioFinal);
-      }
-      alert('¡Semana reservada! Revisa tus reservas.');
-      actualizarAhorro();
-      renderReservas();
-    } catch (e) {
-      console.error("Error al reservar semana:", e);
-      alert("Hubo un error al guardar las reservas. Intenta de nuevo.");
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Confirmar reserva semanal';
-    }
+  function reservarSemana(){
+    dias.forEach(d=>{
+      const sel = document.getElementById('sel-'+d);
+      const id = parseInt(sel.value);
+      const p = platos.find(x=>x.id===id);
+      const precioFinal = Math.round(p.precio*0.9);
+      reservas.push({
+        id:Date.now()+Math.random(),
+        plato:p.nombre,
+        precio:precioFinal,
+        precioOriginal:p.precio,
+        fecha:`${d} 12:30`,
+        cafeteria:'Giraldo',
+        hora:'12:30',
+        modalidad:'Autoservicio',
+        semana:semanaActual
+      });
+      ahorroTotal += (p.precio - precioFinal);
+      guardarEnFirebase(p.nombre, `${d} 12:30`, 'Autoservicio', 'Giraldo', '12:30');
+    });
+    alert('¡Semana reservada! Revisa tus reservas.');
+    actualizarAhorro();
+    renderReservas();
   }
 
   function abrirReserva(id){
@@ -1025,38 +1005,33 @@
     document.getElementById('modal-reserva').classList.remove('active');
   }
 
-  async function confirmarReserva(){
+  function confirmarReserva(){
     const modalidad = document.getElementById('modal-modalidad').value;
     const cafeteria = document.getElementById('modal-cafeteria').value;
     const hora = document.getElementById('modal-hora').value;
     const precioFinal = Math.round(platoSeleccionado.precio*0.9);
-    
-    // Guardar en Firebase y obtener el ID del documento
-    const docId = await guardarEnFirebase(platoSeleccionado.nombre, `Hoy, ${hora}`, modalidad, cafeteria, hora);
-    
     reservas.push({
-      id: Date.now(),
-      docId: docId, // ID del documento en Firebase
-      plato: platoSeleccionado.nombre,
-      precio: precioFinal,
-      precioOriginal: platoSeleccionado.precio,
-      fecha: `Hoy, ${hora}`,
-      cafeteria: cafeteria,
-      hora: hora,
-      modalidad: modalidad,
-      semana: semanaActual
+      id:Date.now(),
+      plato:platoSeleccionado.nombre,
+      precio:precioFinal,
+      precioOriginal:platoSeleccionado.precio,
+      fecha:`Hoy, ${hora}`,
+      cafeteria:cafeteria,
+      hora:hora,
+      modalidad:modalidad,
+      semana:semanaActual
     });
     ahorroTotal += (platoSeleccionado.precio - precioFinal);
+    guardarEnFirebase(platoSeleccionado.nombre, `Hoy, ${hora}`, modalidad, cafeteria, hora);
     cerrarModal();
     actualizarAhorro();
     renderReservas();
     alert(`¡Reserva confirmada! Recoge en ${cafeteria} a las ${hora}. Puedes cancelar hasta 2 horas antes.`);
   }
 
-  // Función que guarda en Firebase y RETORNA el ID del documento creado
   async function guardarEnFirebase(nombrePlato, fecha, modalidad, cafeteria, hora) {
     try {
-      const docRef = await window.addDoc(window.collection(window.db, "reservas"), {
+      await window.addDoc(window.collection(window.db, "reservas"), {
         plato: nombrePlato,
         fecha: fecha,
         modalidad: modalidad,
@@ -1066,43 +1041,9 @@
         estudiante: "2024•••789",
         timestamp: window.serverTimestamp()
       });
-      return docRef.id; // Retornamos el ID del documento para poder borrarlo después
     } catch (e) {
       console.error("Error al guardar en Firebase: ", e);
       alert("Hubo un error al conectar con la base de datos.");
-      throw e;
-    }
-  }
-
-  // Función que CANCELA la reserva: la borra de Firebase y del array local
-  async function cancelarReserva(idReservaLocal){
-    const reserva = reservas.find(r => r.id === idReservaLocal);
-    if (!reserva) return;
-    
-    if(!confirm(`¿Cancelar esta reserva?\n\nPlato: ${reserva.plato}\nCafetería: ${reserva.cafeteria}\nHora: ${reserva.hora}\n\nLa reserva se eliminará de la base de datos.`)){
-      return;
-    }
-    
-    try {
-      // Si tiene docId (viene de Firebase), borrarlo de la base de datos
-      if (reserva.docId) {
-        await window.deleteDoc(window.doc(window.db, "reservas", reserva.docId));
-      }
-      
-      // Quitar del array local
-      reservas = reservas.filter(r => r.id !== idReservaLocal);
-      
-      // Recalcular ahorro
-      ahorroTotal = Math.max(0, ahorroTotal - (reserva.precioOriginal - reserva.precio));
-      
-      // Actualizar la interfaz
-      renderReservas();
-      actualizarAhorro();
-      
-      alert('Reserva cancelada y eliminada de la base de datos.');
-    } catch (e) {
-      console.error("Error al cancelar reserva:", e);
-      alert("Hubo un error al cancelar la reserva. Intenta de nuevo.");
     }
   }
 
@@ -1122,9 +1063,17 @@
             <strong style="color:var(--verde)">$${r.precio.toLocaleString()}</strong>
           </div>
         </div>
-        <button class="btn btn-danger btn-sm" onclick="cancelarReserva(${r.id})">Cancelar</button>
+        <button class="btn btn-outline btn-sm" onclick="cancelarReserva(${r.id})">Cancelar</button>
       </div>
     `).join('');
+  }
+
+  function cancelarReserva(id){
+    if(confirm('¿Cancelar esta reserva?')){
+      reservas = reservas.filter(r=>r.id!==id);
+      renderReservas();
+      actualizarAhorro();
+    }
   }
 
   function actualizarAhorro(){
@@ -1166,9 +1115,6 @@
       </ul>
     `;
   }
-
-  // Exponer cancelarReserva globalmente para que funcione desde el HTML
-  window.cancelarReserva = cancelarReserva;
 
   document.getElementById('btn-semana-anterior').disabled = true;
   renderPlatosHoy();
